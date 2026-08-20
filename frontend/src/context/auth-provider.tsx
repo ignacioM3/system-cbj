@@ -1,0 +1,85 @@
+import { createContext, useEffect, useState } from "react";
+import type { UserLogged } from "../types/User";
+import { useNavigate } from "react-router-dom";
+import api from "../lib/axios";
+import { AppRoutes } from "../app/routes/routes";
+
+interface AuthContextType{
+    currentUser?: UserLogged ;
+    setCurrentUser: React.Dispatch<React.SetStateAction<UserLogged | undefined>>
+    loading: boolean
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    logoutUser: () => void;
+}
+
+const AuthContext = createContext<AuthContextType>({
+    currentUser: undefined,
+    setCurrentUser: () => {},
+    loading: true,
+    setLoading: () => {},
+    logoutUser: () => {}
+});
+
+
+const AuthProvider =({children}: {children: React.ReactNode}) => {
+    const [currentUser, setCurrentUser] = useState<UserLogged | undefined>(undefined)
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const authenticateUser = async () => {
+            const token = localStorage.getItem('AUTH_TOKEN')
+            console.log(token)
+            console.log(currentUser)
+            if(!token){
+                setLoading(false)
+                return
+            }
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+            try {
+                const {data} = await api.get<UserLogged>('/auth/perfil', config);
+                setCurrentUser(data)
+
+            } catch (error) {
+                setCurrentUser(undefined)
+            }
+            setLoading(false)
+        }
+
+        authenticateUser()
+    }, [])
+
+    const logoutUser = () => {
+        setCurrentUser(undefined)
+        localStorage.removeItem("AUTH_TOKEN");
+        navigate(AppRoutes.login.route())
+    }
+
+    return (
+        <AuthContext.Provider 
+            value={{
+                currentUser,
+                setCurrentUser,
+                loading,
+                setLoading,
+                logoutUser
+            }}
+        >
+
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+export {
+    AuthProvider
+}
+
+export default AuthContext 

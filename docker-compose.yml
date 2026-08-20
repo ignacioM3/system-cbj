@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cbj-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cbj
+      POSTGRES_PASSWORD: cbj_secret_2026
+      POSTGRES_DB: cbj_asistencia
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cbj -d cbj_asistencia"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  frontend:
+    container_name: cbj-frontend
+    build:
+      context: ./frontend
+    command: pnpm dev --host
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    container_name: cbj-backend
+    build:
+      context: ./backend
+    command: pnpm dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: db
+      CI: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
