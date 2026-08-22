@@ -47,7 +47,7 @@ export const menuSection: MenuSection[] = [
       {
         label: "Centros",
         icon: <TbBuildings />,
-        to: AppRoutes.homeAdmin.route(),
+        to: AppRoutes.locationsList.route(),
       },
          {
         label: "Equipos",

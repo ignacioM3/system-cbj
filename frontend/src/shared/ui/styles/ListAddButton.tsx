@@ -14,7 +14,7 @@ export function ListAddButton({
     return (
         <>
             <button 
-                className="hidden cursor-pointer md:flex items-center gap-2 justify-center p-2 rounded bg-orange-400 hover:bg-orange-500 text-white transition-colors"
+                className="hidden cursor-pointer md:flex items-center gap-2 justify-center p-2 rounded bg-blue-500 hover:bg-blue-600 text-white transition-colors"
                 onClick={onClick}
                 >
                 <CgMathPlus />

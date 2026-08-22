@@ -1,6 +1,7 @@
 import {  useEffect, useState, type ComponentType } from 'react';
 import type { RouterDefinition } from './routes-definition';
 import { AuthGuard } from './auth-guard';
+import LoadingSpinner from '../../shared/ui/LoadingSpinner';
 
 interface Props {
     route: RouterDefinition;
@@ -67,7 +68,9 @@ export function LazyComponentLoader({ route }: Props) {
     }
 
     if (!components.Page) {
-        return <div className="loading">Cargando...</div>;
+        return <div className="min-h-screen h-full w-full flex items-baseline justify-center">
+            <LoadingSpinner />
+        </div>
     }
 
     const PageComponent = components.Page;
