@@ -65,7 +65,7 @@ if(!data) return null
              <PageTitle>Lista de Centros</PageTitle>
 
         <ListAddButton
-          onClick={() => navigate("")}
+          onClick={() => navigate(AppRoutes.createLocation.route())}
         >
           Agregar Centro
         </ListAddButton>

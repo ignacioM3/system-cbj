@@ -9,3 +9,9 @@ const locationSchema = z.object({
 
 
 export type Location = z.infer<typeof locationSchema>
+export type CreateLocationDataForm = Pick<Location, "name" | "address">
+
+export interface LocationsListResponse {
+  locations: Location[];
+  total: number;
+}

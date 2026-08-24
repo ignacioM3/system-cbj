@@ -12,5 +12,10 @@ export const adminRoutes = {
           route: () => "/dashboard/locations/list",
         layout: adminLayoutImport,
         page: async () => (await import('../../../features/dashboard/pages/LocationsList')).LocationsList,
+    },
+    createLocation: {
+        route: () => "/dashboard/locations/add",
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/dashboard/pages/CreateLocation')).CreateLocation,
     }
 }
