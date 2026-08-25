@@ -4,7 +4,7 @@
         id: string;
         firstName: string;
         lastName: string;
-        documentNumber: string;
+        documentNumber?: string;
         birthDate?: Date;
         password: string;
         email: string;

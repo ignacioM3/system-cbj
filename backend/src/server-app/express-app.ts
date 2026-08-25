@@ -5,6 +5,7 @@ import cors from 'cors'
 import type { Request, Response, NextFunction } from "express";
 import { corsConfig } from './config/cors.js';
 import locationRoutes from "./routes/location-api.js"
+import userRoutes from './routes/user-api.js'
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors(corsConfig))
 //routes
 app.use('/api/auth', authRoutes)
 app.use("/api/location", locationRoutes)
+app.use('/api/users', userRoutes)
 
 
 

@@ -10,7 +10,7 @@ export interface IDatabaseService {
   getUserForAuth(id: string): Promise<Omit<User, "password"> | null>
   getAllUsersByRole(role: UserRole): Promise<User[]>;
   getUsersByRolePaginated(role: UserRole, skip: number, limit: number): Promise<{ users: User[]; total: number }>
-
+  createUserWithRole(user: Omit<User, "id" | "isActive">): Promise<User>
   //location
   createLocation(location: Omit<Location, 'id' | 'isActive'>): Promise<Location>;
   getAllLocation(isActive: boolean): Promise<{locations: Location[], total: number}>

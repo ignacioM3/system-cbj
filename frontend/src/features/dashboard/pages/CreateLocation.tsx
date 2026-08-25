@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PageContainer } from "../../../shared/ui/styles/PageContainer";
 import { PageHeader } from "../../../shared/ui/styles/PageHeader";

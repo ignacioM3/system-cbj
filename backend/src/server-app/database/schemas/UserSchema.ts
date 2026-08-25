@@ -29,6 +29,7 @@ export const UserSchema = new EntitySchema<User>({
     },
     documentNumber: {
       type: "varchar",
+      nullable: true,
     },
     birthDate: {
       type: "date",
