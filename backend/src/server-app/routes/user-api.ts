@@ -33,8 +33,10 @@ router.post(
   authenticate,
   authorize(UserRole.ADMIN),
   handleInputErrors,
-  createHandler(UserControllers, "createUser"),
+  createHandler(UserControllers, "createUserCoordinator"),
 );
+
+router.get('/list-coordinator', authenticate, authorize("Admin"), handleInputErrors, createHandler(UserControllers, "getUserCoordinator"))
 
 
 export default router

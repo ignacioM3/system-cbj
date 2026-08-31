@@ -10,6 +10,7 @@ import { menuSection } from "../shared/menu-section";
 import { Burger } from "../shared/ui/Burger";
 import useAuth from "../app/hooks/use-auth";
 import { AppRoutes } from "../app/routes/routes";
+import { getUserRoleLabel } from "../lib/getUserRoleLabel";
 
 export function DashboardLayout({ children }: PropsWithChildren) {
   const { currentUser, logoutUser } = useAuth();
@@ -64,7 +65,7 @@ export function DashboardLayout({ children }: PropsWithChildren) {
           <div>
             <button className="flex items-center gap-2">
               <FaUserAlt />
-              {currentUser?.firstName}({currentUser?.role})
+              {currentUser?.firstName}({getUserRoleLabel(currentUser?.role)})
             </button>
           </div>
           <button

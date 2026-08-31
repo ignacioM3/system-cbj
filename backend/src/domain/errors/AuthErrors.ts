@@ -17,3 +17,9 @@ export class UserBlockedError extends AppError {
     super("Usuario Bloqueado comunicarse con el administrador", "USER_BLOCKED", 403);
   }
 }
+
+export class EmailAlreadyExistsError extends AppError {
+  constructor() {
+    super("Ya existe un usuario registrado con este email", "EMAIL_ALREADY_EXISTS", 400);
+  }
+}

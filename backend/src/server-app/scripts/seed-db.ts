@@ -28,7 +28,7 @@ async function seedDatabase(): Promise<void> {
         console.log("👤 Seeding admin users...");
         const hashedPassword = await bcrypt.hash("admin123", 10);
 
-        const adminUsers: User[] = [
+        const Users: User[] = [
             {
                 id: crypto.randomUUID(),
                 firstName: "Nacho",
@@ -62,9 +62,31 @@ async function seedDatabase(): Promise<void> {
                 role: UserRole.ADMIN,
                 isActive: true,
             },
+                 {
+                id: crypto.randomUUID(),
+                firstName: "Lautaro",
+                lastName: "Rodríguez",
+                documentNumber: "30123456",
+                birthDate: new Date("1990-03-10"),
+                email: "lauti@cbj.org",
+                password: hashedPassword,
+                role: UserRole.COORDINATOR,
+                isActive: true,
+            },
+                 {
+                id: crypto.randomUUID(),
+                firstName: "Gonzalo",
+                lastName: "Rodríguez",
+                documentNumber: "30123456",
+                birthDate: new Date("1990-03-10"),
+                email: "gonzalo@cbj.org",
+                password: hashedPassword,
+                role: UserRole.EQUIPMENT,
+                isActive: true,
+            },
         ];
 
-        const savedAdmins = await userRepo.save(adminUsers);
+        const savedAdmins = await userRepo.save(Users);
         console.log(`✅ Seeded ${savedAdmins.length} admin users`);
 
         // ═══════════════════════════════════════════════════════════

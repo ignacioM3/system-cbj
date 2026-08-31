@@ -1,26 +1,26 @@
 import { CreateUserUseCase } from "@domain/use-cases/users/CreateUser.js";
 import type { DatabaseService } from "../services/DatabaseService.js";
 import type { Request, Response } from "express";
-import type { User } from "@domain";
+import { type User } from "@domain";
 import { UserRole } from "../database/schemas/UserRole.js";
 import bcrypt from "bcrypt";
+import { GetUsersByRoleUseCase } from "@domain/use-cases/users/GetUserByRolePaginated.js";
 
 export class UserControllers {
   constructor(private db: DatabaseService) {}
 
-  createUser = async (
+  createUserCoordinator = async (
     req: Request<any, any, Omit<User, "id" | "isActive" | "role">>,
     res: Response,
   ) => {
     const useCase = new CreateUserUseCase(this.db);
 
-
-      const salt = await bcrypt.genSalt(10);
-      const passwordSaled = await bcrypt.hash(req.body.password, salt);
-      const userHashed = {
-        ...req.body,
-        password: passwordSaled
-      }
+    const salt = await bcrypt.genSalt(10);
+    const passwordSaled = await bcrypt.hash(req.body.password, salt);
+    const userHashed = {
+      ...req.body,
+      password: passwordSaled,
+    };
 
     const newUser = await useCase.execute({
       newUser: userHashed,
@@ -28,5 +28,20 @@ export class UserControllers {
     });
 
     return res.status(201).json(newUser);
+  };
+
+  getUserCoordinator = async (req: Request, res: Response) => {
+    const useCase = new GetUsersByRoleUseCase(this.db);
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 6;
+
+    const result = await useCase.execute({
+      role: UserRole.COORDINATOR,
+      page,
+      limit,
+    });
+
+    return res.status(200).json(result);
   };
 }
