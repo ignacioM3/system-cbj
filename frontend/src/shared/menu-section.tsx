@@ -5,8 +5,9 @@ import { AppRoutes } from "../app/routes/routes";
 import type { JSX } from "react/jsx-runtime";
 import { RiCalendarCheckLine, RiTeamFill } from "react-icons/ri";
 import { PiChalkboardTeacherDuotone } from "react-icons/pi";
-import { FaPerson } from "react-icons/fa6";
+import { FaChildren } from "react-icons/fa6";
 import { IoCalendarNumberSharp, IoStatsChartSharp } from "react-icons/io5";
+import { GrWorkshop } from "react-icons/gr";
 
 export interface MenuItem {
   label: string;
@@ -50,14 +51,21 @@ export const menuSection: MenuSection[] = [
         to: AppRoutes.locationsList.route(),
       },
          {
-        label: "Equipos",
+        label: "Coordinadores",
         icon: <RiTeamFill />,
+        role: [UserRole.ADMIN],
+        to: AppRoutes.listUsersCoordinator.route(),
+      },
+      {
+        label: "Tallerista",
+        icon: <GrWorkshop />,
         to: AppRoutes.homeAdmin.route(),
       },
-             {
-        label: "Tallerista",
-        icon: <FaPerson />,
-        to: AppRoutes.homeAdmin.route(),
+      {
+        label: "Jovenes",
+        icon: <FaChildren />,
+        role: [UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT],
+        to: ""
       },
       {
         label: "Asistencias",

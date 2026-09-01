@@ -11,4 +11,5 @@
         phone?: string;
         isActive: boolean;
         role: UserRole;
+        locationId?: string;
     }

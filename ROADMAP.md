@@ -1,28 +1,30 @@
 # Roadmap
 
-# Phase 1 — Foundation (Semana 1-2)
+# Phase 1 — Foundation
 - [x] Project setup (monorepo, Docker, TypeScript)
-- [ ] Configurar PostgreSQL con Docker
-- [ ] Configurar ORM y migraciones
-- [ ] Entidades del dominio: Participant, Location, Attendance, User
-- [ ] Sistema de autenticación (login, JWT, middleware)
-- [ ] CRUD básico de User
+- [X] Configurar PostgreSQL con Docker
+- [X] Configurar ORM y migraciones
+- [X] Entidades del dominio: Participant, Location, Attendance, User
+- [X] Sistema de autenticación (login, JWT, middleware)
+- [X] CRUD básico de User
 
-## Phase 2 — Core Attendance (Semana 3-4)
-- [ ] CRUD de Participant
-- [ ] CRUD de Location + generación de QR
-- [ ] Endpoint público de registro de asistencia
-- [ ] Página de escaneo QR (frontend)
-- [ ] Validación de asistencia duplicada
+## Phase 2 — Coordination
+- [x] List coordinators
+- [ ] Create coordinator
+- [ ] Edit coordinator
+- [ ] Delete coordinator
+- [ ] Block / unblock coordinator
+- [ ] Assign coordinator to a location
 
-## Phase 3 — Dashboard (Semana 5-6)
+
+## Phase 3 — Dashboard
 - [ ] Dashboard de admin: asistencia del día
 - [ ] Filtros por sede y fecha
 - [ ] Historial por participante
 - [ ] Gestión de participantes (UI)
 - [ ] Gestión de sedes (UI) + descarga de QR
 
-## Phase 4 — Polish & Deploy (Semana 7-8)
+## Phase 4 — Polish & Deploy
 - [ ] Responsive mobile para página de QR
 - [ ] Manejo de errores y estados de carga
 - [ ] Tests de endpoints críticos

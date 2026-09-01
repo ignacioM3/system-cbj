@@ -15,6 +15,8 @@ const userSchema = z.object({
 });
 
 export type Auth = z.infer<typeof userSchema>;
-
 export type UserLoginForm = Pick<Auth, "email" | "password">;
 export type UserLogged = Omit<Auth, "password">;
+
+
+export type User = z.infer<typeof userSchema>;
