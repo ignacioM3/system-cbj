@@ -1,5 +1,5 @@
 import { Between, type DataSource, type Repository } from "typeorm";
-import { type IDatabaseService } from "@domain";
+import { UserNotFoundError, type IDatabaseService } from "@domain";
 import type { Location, User } from "@domain";
 import { UserSchema } from "../database/schemas/UserSchema.js";
 import type { UserRole } from "../database/schemas/UserRole.js";
@@ -149,6 +149,27 @@ export class DatabaseService implements IDatabaseService {
       throw new Error("Failed to fetch user for auth");
     }
   }
+
+   async disableUserById(id: string): Promise<void> {
+        try {
+            const user = await this.userRepository.findOne({
+                where: { id }
+            });
+
+            if (!user) {
+                throw new UserNotFoundError();
+            }
+
+            user.isActive = false;
+            await this.userRepository.save(user);
+
+        } catch (error) {
+            console.error(`Error disable user ${id}:`, error);
+            throw new Error(
+                `Failed to disable user: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
 
   async createLocation(
     data: Omit<Location, "id" | "isActive">,

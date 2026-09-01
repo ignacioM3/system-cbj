@@ -11,3 +11,4 @@ export class RequiredIDError extends AppError {
     super("El ID es obligatorio", "REQUIRED_ID", 400);
   }
 }
+

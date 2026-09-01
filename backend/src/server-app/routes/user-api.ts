@@ -6,6 +6,7 @@ import { UserRole } from "../database/schemas/UserRole.js";
 import { createHandler } from "../utils/createHandler.js";
 import { UserControllers } from "../controllers/UserControllers.js";
 import { handleInputErrors } from "../middleware/validation.js";
+import { create } from "domain";
 
 const router = Router();
 
@@ -37,6 +38,6 @@ router.post(
 );
 
 router.get('/list-coordinator', authenticate, authorize("Admin"), handleInputErrors, createHandler(UserControllers, "getUserCoordinator"))
-
+router.post('/disable/:userId', authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(UserControllers, "disableUser"))
 
 export default router

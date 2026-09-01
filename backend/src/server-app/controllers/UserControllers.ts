@@ -5,6 +5,7 @@ import { type User } from "@domain";
 import { UserRole } from "../database/schemas/UserRole.js";
 import bcrypt from "bcrypt";
 import { GetUsersByRoleUseCase } from "@domain/use-cases/users/GetUserByRolePaginated.js";
+import { DisableUserUseCase } from "@domain/use-cases/users/DisableUserCase.js";
 
 export class UserControllers {
   constructor(private db: DatabaseService) {}
@@ -44,4 +45,14 @@ export class UserControllers {
 
     return res.status(200).json(result);
   };
+
+  disableUser = async (req: Request<{userId: string}>, res: Response) => {
+    const {userId} = req.params
+
+     const useCase = new DisableUserUseCase(this.db);
+
+        await useCase.execute({ userId });
+
+        res.send("Usuario deshabilitado con exito")
+  }
 }
