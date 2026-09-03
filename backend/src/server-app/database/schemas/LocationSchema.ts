@@ -21,4 +21,11 @@ export const LocationSchema = new EntitySchema<Location>({
       default: true,
     },
   },
+  relations: {
+    users: {
+      type: "one-to-many",
+      target: "User",
+      inverseSide: "location",
+    },
+  },
 });

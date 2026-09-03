@@ -54,6 +54,9 @@ export class DatabaseService implements IDatabaseService {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
+        relations: {
+          location: true,
+        },
       });
       return user;
     } catch (error) {
@@ -70,6 +73,9 @@ export class DatabaseService implements IDatabaseService {
     try {
       const users = await this.userRepository.find({
         order: { firstName: "ASC" },
+        relations: {
+          location: true,
+        },
       });
       return users;
     } catch (error) {
@@ -116,6 +122,9 @@ export class DatabaseService implements IDatabaseService {
     try {
       const [users, total] = await this.userRepository.findAndCount({
         where: { role },
+        relations: {
+          location: true,
+        },
         skip,
         take: limit,
         order: { firstName: "ASC" },
@@ -150,26 +159,25 @@ export class DatabaseService implements IDatabaseService {
     }
   }
 
-   async disableUserById(id: string): Promise<void> {
-        try {
-            const user = await this.userRepository.findOne({
-                where: { id }
-            });
+  async disableUserById(id: string): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
 
-            if (!user) {
-                throw new UserNotFoundError();
-            }
+      if (!user) {
+        throw new UserNotFoundError();
+      }
 
-            user.isActive = false;
-            await this.userRepository.save(user);
-
-        } catch (error) {
-            console.error(`Error disable user ${id}:`, error);
-            throw new Error(
-                `Failed to disable user: ${error instanceof Error ? error.message : String(error)}`
-            );
-        }
+      user.isActive = false;
+      await this.userRepository.save(user);
+    } catch (error) {
+      console.error(`Error disable user ${id}:`, error);
+      throw new Error(
+        `Failed to disable user: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
+  }
 
   async createLocation(
     data: Omit<Location, "id" | "isActive">,

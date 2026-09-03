@@ -1,5 +1,6 @@
 import { EntitySchema } from "typeorm";
 import type { User } from "@domain";
+import type { Location } from "express-validator";
 
 export const UserSchema = new EntitySchema<User>({
   name: "User",
@@ -15,8 +16,8 @@ export const UserSchema = new EntitySchema<User>({
       unique: true,
     },
     phone: {
-        type: "varchar",
-        nullable: true,
+      type: "varchar",
+      nullable: true,
     },
     password: {
       type: "varchar",
@@ -41,7 +42,31 @@ export const UserSchema = new EntitySchema<User>({
     },
     role: {
       type: "varchar",
-      
+    },
+    locationId: {
+      type: "uuid",
+      nullable: true,
+    },
+    
+  },
+  relations: {
+    location: {
+      type: "many-to-one",
+      target: "Location",
+      joinColumn: {
+        name: "locationId",
+      },
+      nullable: true,
+      onDelete: "SET NULL",
     },
   },
+
+  indices: [
+    {
+      name: "IDX_USERS_LOCATION",
+      columns: ["locationId"],
+    },
+  ],
+  
 });
+

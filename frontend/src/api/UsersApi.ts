@@ -1,9 +1,9 @@
 import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import type { User } from "../types/User";
+import type { UserWithRelations } from "../types/User";
 
 interface UserListResponse {
-  users: User[];
+  users: UserWithRelations[];
   total: number;
 }
 

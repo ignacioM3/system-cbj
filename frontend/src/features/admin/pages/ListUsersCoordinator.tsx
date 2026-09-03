@@ -5,7 +5,7 @@ import { PageContainer } from "../../../shared/ui/styles/PageContainer";
 import { PageHeader } from "../../../shared/ui/styles/PageHeader";
 import { PageTitle } from "../../../shared/ui/styles/PageTitle";
 import { PageContent } from "../../../shared/ui/styles/PageContent";
-import { MdBlock, MdOutlineEdit, MdOutlineVisibilityOff } from "react-icons/md";
+import { MdBlock, MdOutlineEdit } from "react-icons/md";
 import { Pagination } from "../../../shared/ui/styles/Pagination";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
@@ -91,8 +91,8 @@ export function ListUsersCoordinator() {
                               {row.firstName}
                             </p>
                             {!row.isActive && (
-                              <span className="text-xs text-red-500">
-                                Cliente deshabilitado
+                              <span className="text-xs text-red-400 font-bold">
+                                Usuario Deshabilitado
                               </span>
                             )}
                           </div>
@@ -125,7 +125,7 @@ export function ListUsersCoordinator() {
                             className={`w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer transition-all duration-200
                                 ${row.isActive
                                 ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                                : "bg-blue-600 text-white"}`}
+                                : "bg-blue-600 hover:bg-blue-700 text-white"}`}
                           >
                             <MdBlock size={18} />
                           </button>

@@ -1,5 +1,6 @@
 import z from "zod";
 import { UserRole } from "./user-role";
+import type { Location } from "./Location";
 
 const userSchema = z.object({
   id: z.string(),
@@ -13,6 +14,10 @@ const userSchema = z.object({
   isActive: z.boolean(),
   role: z.enum([UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT, UserRole.TUTOR] as const),
 });
+
+export type UserWithRelations = User & {
+    location: Location
+}
 
 export type Auth = z.infer<typeof userSchema>;
 export type UserLoginForm = Pick<Auth, "email" | "password">;
