@@ -12,6 +12,7 @@ const userSchema = z.object({
   birthDate: z.date().optional(),
   phone: z.string().optional(),
   isActive: z.boolean(),
+  locationId: z.string(),
   role: z.enum([UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT, UserRole.TUTOR] as const),
 });
 

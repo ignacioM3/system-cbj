@@ -11,8 +11,9 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import { gettAllUserCoordinator } from "../../../api/UsersApi";
-import type { User } from "../../../types/User";
+import type { User, UserWithRelations } from "../../../types/User";
 import { FaTrashAlt } from "react-icons/fa";
+import { DeleteUserModal } from "../components/DeleteUserModal";
 
 export function ListUsersCoordinator() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ export function ListUsersCoordinator() {
 
               <tbody>
                 {data.total ? (
-                  data.users.map((row: User) => (
+                  data.users.map((row: UserWithRelations) => (
                     <tr
                       key={row.id}
                       className="border-b last:border-none border-[#f3ead0] hover:bg-orange-50 transition-colors"
@@ -104,7 +105,7 @@ export function ListUsersCoordinator() {
                       </td>
 
                       <td className="p-3 hidden md:table-cell text-gray-600">
-                        {row.documentNumber}
+                        {row.location.name}
                       </td>
 
                       <td className="p-3">
@@ -130,8 +131,12 @@ export function ListUsersCoordinator() {
                             <MdBlock size={18} />
                           </button>
 
-                          {/* Ver */}
+                      
                           <button
+                             title="Eliminar"
+                            onClick={() =>
+                              navigate(location.pathname + `?deleteUser=${row.id}`)
+                            }
                             className="h-9 px-3 rounded-lg cursor-pointer bg-orange-100 text-orange-600 hover:bg-orange-200 transition-all duration-200 text-sm font-medium"
                           >
                             <FaTrashAlt size={18}/>
@@ -165,6 +170,7 @@ export function ListUsersCoordinator() {
             onPageChange={(page) => setCurrentPage(page)}
           />
         </div>
+        <DeleteUserModal />
 
       </PageContent>
     </PageContainer>

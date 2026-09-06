@@ -21,3 +21,21 @@ export async function gettAllUserCoordinator(page: number, limit?: number): Prom
     throw new Error("Unexpected error occurred");
   }
 }
+
+export async function deleteUserCoordinator(deleteUserId: string): Promise<string> {
+  try {
+
+    const url = `/users/delete/coordinator/${deleteUserId}`;
+    const { data } = await api.post(url);
+
+    return data;
+
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      console.log(error)
+      throw new Error(error.response.data.error);
+    } else {
+      throw new Error("Unexpected error occurred");
+    }
+  }
+}
