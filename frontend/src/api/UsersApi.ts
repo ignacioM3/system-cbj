@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import type { UserWithRelations } from "../types/User";
+import type { CreateUserForm, UserWithRelations } from "../types/User";
 
 interface UserListResponse {
   users: UserWithRelations[];
@@ -37,5 +37,19 @@ export async function deleteUserCoordinator(deleteUserId: string): Promise<strin
     } else {
       throw new Error("Unexpected error occurred");
     }
+  }
+}
+
+export async function createUserCoordinator(createUserData: CreateUserForm): Promise<Location> {
+  try {
+    const url = "/users/create/coordinator";
+    const { data } = await api.post(url, createUserData);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      console.log(error);
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Unexpected error occurred");
   }
 }

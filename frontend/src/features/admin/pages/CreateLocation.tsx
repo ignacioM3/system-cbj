@@ -50,7 +50,7 @@ export function CreateLocation() {
       <PageHeader
         goBack={true}
         nameBack="Listado"
-        backString={AppRoutes.listUsersCoordinator.route()}
+        backString={AppRoutes.locationsList .route()}
       >
         <PageTitle>Crear Centro</PageTitle>
       </PageHeader>

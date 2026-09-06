@@ -26,3 +26,4 @@ export type UserLogged = Omit<Auth, "password">;
 
 
 export type User = z.infer<typeof userSchema>;
+export type CreateUserForm = Omit<User, "id" | "isActive" | "role">

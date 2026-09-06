@@ -51,7 +51,7 @@ export function ListUsersCoordinator() {
              <PageTitle>Lista de Coordinadores</PageTitle>
 
         <ListAddButton
-          onClick={() => navigate(AppRoutes.createLocation.route())}
+          onClick={() => navigate(AppRoutes.createUserCoordinator.route())}
         >
           Agregar Equipo
         </ListAddButton>

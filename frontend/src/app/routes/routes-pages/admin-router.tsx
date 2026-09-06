@@ -31,4 +31,11 @@ export const adminRoutes = {
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN],
     },
+    createUserCoordinator:  {
+        route: () => "/dashboard/users/add/coordinator",
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/CreateCoordinator')).CreateCoordinator,
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN],
+    },
 }
