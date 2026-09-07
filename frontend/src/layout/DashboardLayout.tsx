@@ -88,7 +88,7 @@ export function DashboardLayout({ children }: PropsWithChildren) {
           </div>
         </header>
         <div
-          className={`${clicked && "activeAdmin"} bgAdmin flex flex-col item md:hidden `}
+          className={`${clicked && "header-admin-active"} header-admin flex flex-col item md:hidden `}
         >
           {menuSection.map((section, index) => (
             <section key={index}>
