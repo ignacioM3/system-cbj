@@ -114,7 +114,7 @@ if(!data) return null
 
                     <div
                       key={location.id}
-                      onClick={() => navigate("")}
+                      onClick={() => navigate(AppRoutes.locationDetails.route(location.id))}
                       className="
                         cursor-pointer
                         p-6

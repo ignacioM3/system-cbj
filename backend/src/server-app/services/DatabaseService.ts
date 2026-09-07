@@ -217,4 +217,20 @@ export class DatabaseService implements IDatabaseService {
       );
     }
   }
+
+  async getLocationById(id: string): Promise<Location | null> {
+    try {
+      const location = await this.locationRepository.findOne({
+        where: { id },
+      });
+      return location;
+    } catch (error) {
+      console.error(`Error fetching user by ID ${id}:`, error);
+      throw new Error(
+        `Failed to fetch user: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
 }

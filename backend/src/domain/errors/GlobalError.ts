@@ -5,3 +5,11 @@ export class ServerError extends AppError {
     super("Error en el servidor", "SERVER_ERROR", 500);
   }
 }
+
+
+
+export class RequiredIDError extends AppError {
+  constructor(){
+    super("El ID es obligatorio", "REQUIRED_ID", 400);
+  }
+}

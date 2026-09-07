@@ -3,6 +3,7 @@ import type { DatabaseService } from "../services/DatabaseService.js";
 import type { Request, Response } from "express";
 import { CreateLocationUseCase } from "@domain/use-cases/locations/CreateLocation.js";
 import { GetAllLocationsUseCase } from "@domain/use-cases/locations/GetAllLocations.js";
+import { GetLocationByIdUseCase } from "@domain/use-cases/locations/GetLocationById.js";
 
 export class LocationControllers {
   constructor(private db: DatabaseService) {}
@@ -25,5 +26,13 @@ export class LocationControllers {
     });
 
     return res.status(200).json(allLocations);
+  }
+
+  async getLocationById(req: Request<{locationId: string}>, res: Response){
+    const useCase = new GetLocationByIdUseCase(this.db);
+    const {locationId} = req.params
+
+    const location = await useCase.execute({locationId})
+    res.status(200).json(location)
   }
 }

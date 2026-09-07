@@ -35,4 +35,7 @@ router.get(
   createHandler(LocationControllers, "getAllLocationsActive"),
 );
 
+router.get("/details/:locationId", authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(LocationControllers, "getLocationById"))
+
+
 export default router;
