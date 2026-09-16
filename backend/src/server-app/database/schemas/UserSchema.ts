@@ -1,6 +1,5 @@
 import { EntitySchema } from "typeorm";
 import type { User } from "@domain";
-import type { Location } from "express-validator";
 
 export const UserSchema = new EntitySchema<User>({
   name: "User",

@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { AppRoutes } from "../../../app/routes/routes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  createLocationApi,
   getAllLocationsActive,
 } from "../../../api/LocationApi";
 import { sileo } from "sileo";

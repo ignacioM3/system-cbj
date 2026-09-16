@@ -4,7 +4,7 @@ import { PageContent } from "../../../shared/ui/styles/PageContent";
 import { PageHeader } from "../../../shared/ui/styles/PageHeader";
 import { PageTitle } from "../../../shared/ui/styles/PageTitle";
 import { useQuery } from "@tanstack/react-query";
-import {getAllLocationsActive} from "../../../api/LocationApi"
+import { getAllLocationsActive } from "../../../api/LocationApi";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
 import { ListAddButton } from "../../../shared/ui/styles/ListAddButton";
 import { useNavigate } from "react-router-dom";
@@ -12,11 +12,12 @@ import { useMemo, useState } from "react";
 import { MetricCard } from "../../../shared/MetricCard";
 import { SearchBar } from "../../../shared/ui/styles/SearchBar";
 import { BiBuildings } from "react-icons/bi";
+import { getEquipment } from "../../../lib/getUsers";
 
 export function LocationsList() {
-const navigate = useNavigate()
+  const navigate = useNavigate();
 
- const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const normalizeText = (text: string) =>
     text
       .normalize("NFD")
@@ -29,8 +30,7 @@ const navigate = useNavigate()
     queryFn: () => getAllLocationsActive(),
     retry: false,
   });
-  
-  
+
   const filteredLocations = useMemo(() => {
     if (!data?.locations) return [];
 
@@ -40,20 +40,19 @@ const navigate = useNavigate()
 
     const normalizedSearch = normalizeText(search);
 
-    return data.locations.filter((location) =>
-      normalizeText(location.name).includes(normalizedSearch) ||
-      normalizeText(location.address).includes(normalizedSearch)
+    return data.locations.filter(
+      (location) =>
+        normalizeText(location.name).includes(normalizedSearch) ||
+        normalizeText(location.address).includes(normalizedSearch),
     );
   }, [data?.locations, search]);
 
-
-
- if (isLoading) return <LoadingSpinner />;
-   if (isError || !data) {
+  if (isLoading) return <LoadingSpinner />;
+  if (isError || !data) {
     return <div>Error al cargar los centros</div>;
   }
 
-if(!data) return null
+  if (!data) return null;
 
   return (
     <PageContainer>
@@ -62,7 +61,7 @@ if(!data) return null
         nameBack="Inicio"
         backString={AppRoutes.homeAdmin.route()}
       >
-             <PageTitle>Lista de Centros</PageTitle>
+        <PageTitle>Lista de Centros</PageTitle>
 
         <ListAddButton
           onClick={() => navigate(AppRoutes.createLocation.route())}
@@ -71,12 +70,9 @@ if(!data) return null
         </ListAddButton>
       </PageHeader>
       <PageContent>
-
-          <div className="space-y-8">
-
+        <div className="space-y-8">
           {/* 📊 MÉTRICAS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
             <MetricCard
               title="Centros Activos"
               value={data.total}
@@ -94,27 +90,24 @@ if(!data) return null
               value={14}
               color="text-orange-600"
             />
-
           </div>
 
           {/* SEARCH */}
           <div className="flex justify-end">
-            <SearchBar
-              value={search}
-              onChange={setSearch}
-            />
+            <SearchBar value={search} onChange={setSearch} />
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow border border-[#f3ead0]">
-
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-
-            {filteredLocations.length > 0 ? (
-                filteredLocations.map((location) => (
-
+              {filteredLocations.length > 0 ? (
+                filteredLocations.map((location) => {
+                  const totalEquipment = getEquipment(location.users)
+                  return (
                     <div
                       key={location.id}
-                      onClick={() => navigate(AppRoutes.locationDetails.route(location.id))}
+                      onClick={() =>
+                        navigate(AppRoutes.locationDetails.route(location.id))
+                      }
                       className="
                         cursor-pointer
                         p-6
@@ -128,7 +121,6 @@ if(!data) return null
                         group
                       "
                     >
-
                       {/* ICON */}
                       <div className="text-3xl text-purple-400 mb-4 group-hover:scale-110 transition-transform">
                         <BiBuildings />
@@ -146,12 +138,8 @@ if(!data) return null
 
                       {/* STATS */}
                       <div className="mt-4 space-y-1 text-sm">
-
                         <p>
-                          <span className="font-semibold">
-                            Equipos:
-                          </span>{" "}
-                          8
+                          <span className="font-semibold">Equipos:</span> {totalEquipment.length}
                         </p>
 
                         <p>
@@ -160,24 +148,20 @@ if(!data) return null
                           </span>{" "}
                           300
                         </p>
-
                       </div>
                     </div>
-                )
-              )) : (
+                  );
+                })
+              ) : (
                 <div className="col-span-full text-center text-gray-500 py-10">
                   {search
                     ? `No hay resultados para "${search}"`
                     : "No hay sucursales registradas"}
                 </div>
               )}
-
             </div>
-
           </div>
-
         </div>
-
       </PageContent>
     </PageContainer>
   );

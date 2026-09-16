@@ -1,4 +1,5 @@
-import { RequiredIDError, UserNotFoundError } from "@domain/errors/UsersErrors.js";
+import { RequiredIDError } from "@domain/errors/GlobalError.js";
+import { UserNotFoundError } from "@domain/errors/UsersErrors.js";
 import type { IDatabaseService } from "@domain/services/IDatabaseService.js";
 
 export interface DisableUserInput {

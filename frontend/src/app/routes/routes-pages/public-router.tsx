@@ -7,5 +7,10 @@ export const publicRoutes = {
         route: () => "/login",
         layout: appLayoutImport,
         page: async () => (await import('../../../features/public/pages/Login')).Login,
+    },
+    attendance: {
+        route: (id?: string) => `/attendance/${id?? ":id"}`,
+        layout: appLayoutImport,
+        page: async () => (await import('../../../features/public/pages/AttendencesPublic')).AttendancePage,
     }
 }

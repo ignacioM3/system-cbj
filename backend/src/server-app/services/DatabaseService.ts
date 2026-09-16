@@ -4,6 +4,7 @@ import type { Location, User } from "@domain";
 import { UserSchema } from "../database/schemas/UserSchema.js";
 import type { UserRole } from "../database/schemas/UserRole.js";
 import { LocationSchema } from "../database/schemas/LocationSchema.js";
+import { LocationNotFoundError } from "@domain/errors/LocationErrors.js";
 
 /* Implementación de IDatabaseService usando typeorm */
 export class DatabaseService implements IDatabaseService {
@@ -202,6 +203,9 @@ export class DatabaseService implements IDatabaseService {
       const [locations, total] = await this.locationRepository.findAndCount({
         order: { name: "ASC" },
         where: { isActive },
+         relations: {
+          users: true
+        }
       });
 
       return {
@@ -222,6 +226,9 @@ export class DatabaseService implements IDatabaseService {
     try {
       const location = await this.locationRepository.findOne({
         where: { id },
+        relations: {
+          users: true
+        }
       });
       return location;
     } catch (error) {
@@ -233,4 +240,27 @@ export class DatabaseService implements IDatabaseService {
       );
     }
   }
+
+  async updateLocation(locationId: string, updateData: Partial<Location>): Promise<Location> {
+    try {
+      const location = await this.locationRepository.findOne({
+        where: { id: locationId },
+      });
+      if (!location) {
+        throw new LocationNotFoundError();
+      }
+      
+      const updateLocation = this.locationRepository.merge(location, updateData);
+      await this.locationRepository.save(updateLocation);
+      return updateLocation;
+      
+    } catch (error) {
+      console.error(`Error updating location ${locationId}:`, error);
+      throw new Error(
+        `Failed to update location: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  } 
 }

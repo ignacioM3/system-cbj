@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { User } from "./User";
 
 const locationSchema = z.object({
      id: z.string(),
@@ -11,7 +12,15 @@ const locationSchema = z.object({
 export type Location = z.infer<typeof locationSchema>
 export type CreateLocationDataForm = Pick<Location, "name" | "address">
 
+
+export interface LocationDetails extends Location { 
+  users: User[]; 
+} 
+
 export interface LocationsListResponse {
-  locations: Location[];
+  locations: LocationDetails[];
   total: number;
+}
+export interface LocationDetailsResponse { 
+  location: LocationDetails; 
 }

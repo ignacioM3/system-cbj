@@ -16,5 +16,6 @@ export interface IDatabaseService {
   createLocation(location: Omit<Location, 'id' | 'isActive'>): Promise<Location>;
   getAllLocation(isActive: boolean): Promise<{locations: Location[], total: number}>
   getLocationById(id: string): Promise<Location | null>;
+  updateLocation(locationId: string, updateData: Partial<Location>): Promise<Location>;
 }
     

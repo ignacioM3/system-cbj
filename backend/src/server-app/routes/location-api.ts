@@ -36,6 +36,6 @@ router.get(
 );
 
 router.get("/details/:locationId", authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(LocationControllers, "getLocationById"))
-
+router.put("/editName/:locationId", authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(LocationControllers, "editLocationName"))
 
 export default router;

@@ -5,5 +5,5 @@ import type { User } from "./Users.js";
         name: string;
         address: string;
         isActive: boolean;
-         users?: User[];
+        users?: User[];
     }
