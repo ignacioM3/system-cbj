@@ -4,7 +4,7 @@ import { sileo, Toaster } from "sileo";
 import { routeList } from "./routes/routes";
 import { LazyComponentLoader } from "./routes/lazy-component-loader";
 import { AuthProvider } from "../context/auth-provider";
-
+console.log(sileo)
 function App() {
   return (
     <BrowserRouter>

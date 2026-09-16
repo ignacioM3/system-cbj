@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Burger } from "./Burger";
 import { Link } from "react-router-dom";
-import { AppRoutes } from "../../app/routes/routes";
 
 
 export function Header() {

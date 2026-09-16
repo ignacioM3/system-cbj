@@ -4,7 +4,6 @@ import { sileo } from "sileo";
 import { editLocationNameApi } from "../../../api/LocationApi";
 import { useForm } from "react-hook-form";
 import { FaRegBuilding } from "react-icons/fa6";
-import { id } from "zod/v4/locales/index.js";
 
 export function EditLocationNameModal() {
   const location = useLocation();
@@ -15,7 +14,7 @@ export function EditLocationNameModal() {
   const editLocationId = queryParams.get("editNameLocationId")!;
   const show = editLocationId ? true : false;
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit } = useForm({
   defaultValues: {
     name: "",
   }

@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import { gettAllUserCoordinator } from "../../../api/UsersApi";
-import type { User, UserWithRelations } from "../../../types/User";
+import type { UserWithRelations } from "../../../types/User";
 import { FaTrashAlt } from "react-icons/fa";
 import { DeleteUserModal } from "../components/DeleteUserModal";
 

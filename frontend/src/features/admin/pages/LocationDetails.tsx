@@ -22,7 +22,6 @@ import {
   type AttendanceQRCodeRef,
 } from "../components/AttendanceQRCode";
 import { IoMdEye } from "react-icons/io";
-import { UserRole } from "../../../types/user-role";
 import { useRef } from "react";
 import { EditLocationNameModal } from "../components/EditLocationNameModal";
 
