@@ -7,7 +7,7 @@ import { PageHeader } from "../../../shared/ui/styles/PageHeader";
 import { PageTitle } from "../../../shared/ui/styles/PageTitle";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
-import { getEquipment } from "../../../lib/getUsers";
+import { getCoordinators, getEquipment } from "../../../lib/getUsers";
 import {
   BiBuildings,
   BiMap,
@@ -24,6 +24,7 @@ import {
 import { IoMdEye } from "react-icons/io";
 import { useRef } from "react";
 import { EditLocationNameModal } from "../components/EditLocationNameModal";
+import { FaUserFriends } from "react-icons/fa";
 
 export function LocationDetails() {
   const { id } = useParams();
@@ -39,9 +40,7 @@ export function LocationDetails() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
         <LoadingSpinner />
-      </div>
     );
   }
 
@@ -56,6 +55,7 @@ export function LocationDetails() {
   const location = data.location;
 
   const equipment = getEquipment(location.users);
+  const coordinator = getCoordinators(location.users)
 
   return (
     <PageContainer>
@@ -106,6 +106,16 @@ export function LocationDetails() {
 
                     <p>{location.address}</p>
                   </div>
+                {
+                  coordinator[0] && (
+                         <div className="flex items-center gap-2 text-gray-500 mt-2">
+                    <FaUserFriends />
+
+                     <p>{coordinator[0]?.lastName} {coordinator[0]?.firstName}</p>
+                  </div>
+                  )
+                }
+                  
                 </div>
               </div>
 

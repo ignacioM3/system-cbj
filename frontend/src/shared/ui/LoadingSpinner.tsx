@@ -1,20 +1,22 @@
+import { PageContainer } from "./styles/PageContainer";
 
-interface LoadingSpinnerPops{
-  className?: string
+interface LoadingSpinnerPops {
+  className?: string;
 }
 
-
-export default function LoadingSpinner({className = ""}: LoadingSpinnerPops) {
+export default function LoadingSpinner({ className = "" }: LoadingSpinnerPops) {
   return (
-     <div className={`loading`}>
-          <div className={`sk-chase ${className}`}>
-              <div className="sk-chase-dot"></div>
-              <div className="sk-chase-dot"></div>
-              <div className="sk-chase-dot"></div>
-              <div className="sk-chase-dot"></div>
-              <div className="sk-chase-dot"></div>
-              <div className="sk-chase-dot"></div>
-          </div>
+    <PageContainer className="min-h-full min-w-full flex justify-center items-center">
+      <div className={`loading`}>
+        <div className={`sk-chase ${className}`}>
+          <div className="sk-chase-dot"></div>
+          <div className="sk-chase-dot"></div>
+          <div className="sk-chase-dot"></div>
+          <div className="sk-chase-dot"></div>
+          <div className="sk-chase-dot"></div>
+          <div className="sk-chase-dot"></div>
+        </div>
       </div>
-  )
+    </PageContainer>
+  );
 }

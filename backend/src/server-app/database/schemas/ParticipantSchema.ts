@@ -35,9 +35,24 @@ export const ParticipantSchema = new EntitySchema<Participant>({
       type: "boolean",
       default: true,
     },
+    locationId: {
+      type: "uuid",
+      nullable: true,
+    },
     created_at: {
-        type: "timestamp",
+      type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
+    },
+  },
+  relations: {
+    location: {
+      type: "many-to-one",
+      target: "Location",
+      joinColumn: {
+        name: "locationId",
+      },
+      nullable: true,
+      onDelete: "SET NULL",
     },
   },
 });

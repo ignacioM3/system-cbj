@@ -1,19 +1,22 @@
 import { Between, type DataSource, type Repository } from "typeorm";
 import { UserNotFoundError, type IDatabaseService } from "@domain";
-import type { Location, User } from "@domain";
+import type { Location, Participant, User } from "@domain";
 import { UserSchema } from "../database/schemas/UserSchema.js";
 import type { UserRole } from "../database/schemas/UserRole.js";
 import { LocationSchema } from "../database/schemas/LocationSchema.js";
 import { LocationNotFoundError } from "@domain/errors/LocationErrors.js";
+import { ParticipantSchema } from "../database/schemas/ParticipantSchema.js";
 
 /* Implementación de IDatabaseService usando typeorm */
 export class DatabaseService implements IDatabaseService {
   private userRepository: Repository<User>;
   private locationRepository: Repository<Location>;
+  private participantRepository: Repository<Participant>;
 
   constructor(dataSource: DataSource) {
     this.userRepository = dataSource.getRepository(UserSchema);
     this.locationRepository = dataSource.getRepository(LocationSchema);
+    this.participantRepository = dataSource.getRepository(ParticipantSchema);
   }
 
   async createUserWithRole(data: Omit<User, "id" | "isActive">): Promise<User> {
@@ -263,4 +266,51 @@ export class DatabaseService implements IDatabaseService {
       );
     }
   } 
+
+  async getParticipantByLocationId(locationId: string): Promise<Participant[] | null> {
+    try {
+      const participants = await this.participantRepository.find({
+        where: { locationId },
+      });
+      return participants || null;
+  
+    } catch (error) {
+      console.error(`Error fetching participants by location ID ${locationId}:`, error);
+      throw new Error(
+        `Failed to fetch participants: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  async createParticipant(data: Omit<Participant, "id" | "isActive">): Promise<Participant> {
+    try {
+      const newParticipant = this.participantRepository.create({
+        ...data,
+        isActive: true,})
+
+      const savedParticipant = await this.participantRepository.save(newParticipant);
+      return savedParticipant;
+    } catch (error) {
+      console.error("Error creating participant:", error);
+      throw new Error("Failed to create participant");
+    }
+  }
+
+  async getParticipantByDocumentNumberAndLocationId(documentNumber: string, locationId: string): Promise<Participant | null> {
+    try {
+      const participant = await this.participantRepository.findOne({
+        where: { documentNumber, locationId },
+      });
+      return participant;
+    } catch (error) {
+      console.error(`Error fetching participant by document number ${documentNumber}:`, error);
+      throw new Error(
+        `Failed to fetch participant: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
 }

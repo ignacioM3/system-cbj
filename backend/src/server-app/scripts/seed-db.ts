@@ -1,16 +1,8 @@
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import type {
-  User,
-  Participant,
-  Location,
-  Attendance,
-} from "@domain";
+import type { User, Participant, Location, Attendance } from "@domain";
 
-import {
-  AppDataSource,
-  InitializeDatabase,
-} from "../database/data-source.js";
+import { AppDataSource, InitializeDatabase } from "../database/data-source.js";
 
 import { UserRole } from "../../domain/entities/User-Role.js";
 
@@ -63,7 +55,6 @@ async function seedDatabase(): Promise<void> {
         isActive: true,
       },
     ];
-    
 
     const savedLocations = await locationRepo.save(locationsData);
 
@@ -73,8 +64,6 @@ async function seedDatabase(): Promise<void> {
     // 2. USUARIOS
     // ═══════════════════════════════════════════════════════════
     console.log("👤 Seeding users...");
-
-    
 
     const hashedPassword = await bcrypt.hash("admin123", 10);
 
@@ -259,12 +248,9 @@ async function seedDatabase(): Promise<void> {
       },
     ];
 
-    const savedParticipants =
-      await participantRepo.save(participantsData);
+    const savedParticipants = await participantRepo.save(participantsData);
 
-    console.log(
-      `✅ Seeded ${savedParticipants.length} participants`,
-    );
+    console.log(`✅ Seeded ${savedParticipants.length} participants`);
 
     // ═══════════════════════════════════════════════════════════
     // 4. ASISTENCIAS
@@ -277,12 +263,14 @@ async function seedDatabase(): Promise<void> {
       return date;
     };
 
-    const helperTime = (
-      hours: number,
-      minutes: number,
-    ): string => {
-      return `${String(hours).padStart(2, "0")}:${String(
-        minutes,
+    const helperTime = (hours: number, minutes: number): string => {
+      const totalMinutes = hours * 60 + minutes;
+
+      const normalizedHours = Math.floor(totalMinutes / 60);
+      const normalizedMinutes = totalMinutes % 60;
+
+      return `${String(normalizedHours).padStart(2, "0")}:${String(
+        normalizedMinutes,
       ).padStart(2, "0")}:00`;
     };
 
@@ -386,12 +374,9 @@ async function seedDatabase(): Promise<void> {
       }
     });
 
-    const savedAttendances =
-      await attendanceRepo.save(attendancesData);
+    const savedAttendances = await attendanceRepo.save(attendancesData);
 
-    console.log(
-      `✅ Seeded ${savedAttendances.length} attendances`,
-    );
+    console.log(`✅ Seeded ${savedAttendances.length} attendances`);
 
     // ═══════════════════════════════════════════════════════════
     // RESUMEN
@@ -401,12 +386,8 @@ async function seedDatabase(): Promise<void> {
     console.log("📊 Summary:");
     console.log(`   - Users: ${savedUsers.length}`);
     console.log(`   - Locations: ${savedLocations.length}`);
-    console.log(
-      `   - Participants: ${savedParticipants.length}`,
-    );
-    console.log(
-      `   - Attendances: ${savedAttendances.length}`,
-    );
+    console.log(`   - Participants: ${savedParticipants.length}`);
+    console.log(`   - Attendances: ${savedAttendances.length}`);
 
     console.log("\n🔐 Admin credentials:");
     console.log("   Email: nacho@cbj.org");
