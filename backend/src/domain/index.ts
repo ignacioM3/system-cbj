@@ -12,3 +12,4 @@ export type { IDatabaseService } from "./services/IDatabaseService.js";
 export * from "./errors/UsersErrors.js";
 export * from "./errors/AuthErrors.js";
 export * from "./errors/GlobalError.js";
+export * from "./errors/ParticipantErrors.js";

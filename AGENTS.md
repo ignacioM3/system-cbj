@@ -1,63 +1,150 @@
 # AGENTS.md
 
-## Proyecto
-Sistema de asistencia para el Centro Barrial de Juventud (CBJ).
-Los participantes escanean un QR al llegar a una sede y el sistema
-registra su asistencia. Los administradores pueden consultar
-registros y generar reportes. Participantes solo pueden marcar una asistencia 
-mientras que los administradores todas los participantes que quieran ya que hay muchos
-que no tienen celular.
+Reglas generales para agentes de IA que trabajan en este repositorio.
+Antes de modificar código, entender la arquitectura y consultar la documentación.
 
-## Stack
-- Frontend: React 19 + Vite + TypeScript + TailwindCSS + sileo + react-icons + react-hooks + axios + tanstack/react-query
-- Backend: Node.js + Express + TypeScript
-- Database: PostgreSQL
-- ORM: [Sin decisión aún: Prisma / TypeORM / Drizzle]
-- Auth: JWT
-- Containerization: Docker
+---
 
-## Arquitectura
-El proyecto sigue Clean Architecture con separación por capas:
+## 1. Proyecto
 
-backend/src/
-├── domain/          → Entidades, interfaces, reglas de negocio
-│   ├── entities/    → Participant, Location, Attendance, User
-│   ├── services/    → Interfaces de servicios
-│   ├── errors/      → Errores de dominio
-│   └── use-cases/   → Lógica de negocio pura
-├── server-app/      → Implementación técnica
-│   ├── controllers/ → Manejo de HTTP
-│   ├── config/      → Configuración de la app e interfaz
-│   ├── routes/      → Definición de rutas
-│   ├── middleware/   → Auth, validación, authorizaciones
-│   ├── database/    → Schemas, migraciones
-│   ├── utils/       → Helpers (JWT, HTTP handlers, etc.)
-│   └── services/    → Implementaciones concretas
+Aplicación web para gestionar la asistencia de participantes y talleristas en
+diferentes sedes. Reemplaza el registro en papel por un sistema digital.
 
-frontend/src/
-├── app/             → Configuración de rutas
-├── features/        → Módulos por funcionalidad
-├── layout/          → Layouts compartidos
-├── shared/          → Componentes reutilizables
-└── lib/             → Utilidades (axios, etc.)
+Módulos principales: usuarios, participantes, sedes, asistencias,
+autenticación, autorización y roles.
 
-## Reglas OBLIGATORIAS
-1. El dominio (`domain/`) NUNCA importa de Express, HTTP ni base de datos
-2. Toda validación de input se hace en la capa de middleware/controller
-3. Los errores de negocio se definen en `domain/errors/`
-4. NUNCA exponer contraseñas ni secrets en respuestas API
-5. Los nombres de entidades en inglés, los mensajes de error en español
-6. Preferir funciones puras y tipos estrictos de TypeScript
-7. No agregar dependencias sin justificar en DECISIONS.md
-8. Antes de crear algo nuevo, revisar si ya existe
+---
 
-## Convenciones de código
-- Nombres de archivos: PascalCase para componentes, camelCase para utilities
-- Interfaces con prefijo I solo en servicios del dominio
-- Usar `satisfies` para type-checking de constantes
-- Zod para validación de schemas compartidos
+## 2. Stack
 
-## Idioma
-- Código y comentarios técnicos: inglés
-- Mensajes de error al usuario: español
-- Documentación: español
+- **Backend:** Node.js, TypeScript, Express, TypeORM, PostgreSQL.
+- **Frontend:** React, TypeScript, Vite.
+- **Tests:** Vitest.
+- **Monorepo:** `backend/` y `frontend/` son aplicaciones separadas en el
+  mismo repositorio. La documentación técnica vive en `docs/`.
+
+---
+
+## 3. Comandos
+
+- Instalar dependencias: `pnpm install`
+- Backend en desarrollo: `pnpm --filter backend dev`
+- Frontend en desarrollo: `pnpm --filter frontend dev`
+- Tests: `pnpm --filter backend test` / `pnpm --filter frontend test`
+- Lint: `pnpm lint`
+- Build: `pnpm build`
+
+Si un comando no existe todavía, no lo inventes: decilo explícitamente.
+
+---
+
+## 4. Flujo de trabajo (SDD — Spec-Driven Development)
+
+Los cambios no triviales siguen el flujo definido en `.opencode/commands/sdd-*.md`:
+
+1. `docs/constitution.md` define principios innegociables. **Tiene prioridad
+   sobre cualquier otra regla de este archivo.**
+2. Cada funcionalidad vive en `specs/<NNN-nombre>/` con tres archivos:
+   `spec.md` (el qué y el por qué, en EARS), `plan.md` (el cómo técnico) y
+   `tasks.md` (tareas pequeñas y verificables).
+3. **Ninguna implementación empieza sin una spec aprobada.** No toques
+   código en fases de spec, clarificación, planificación o tasks.
+4. `sdd-implement` implementa **una** tarea: tests primero, se detiene al
+   terminar. No continúa con la siguiente sin autorización.
+5. `sdd-validate` verifica RF por RF. Si algo no está cubierto o falla, se
+   reporta; no se arregla silenciosamente.
+6. `sdd-status` es de solo lectura.
+
+`MEMORY.md` contiene el contexto vivo del proyecto. Consultalo antes de
+trabajar y actualizalo al cerrar cambios significativos.
+
+---
+
+## 5. Arquitectura (no negociable)
+
+**Backend** separa estrictamente:
+
+- `domain/` → reglas y conceptos del negocio (entidades, errores, casos de uso).
+- `server-app/` → infraestructura y comunicación (controllers, rutas,
+  middleware, base de datos, servicios).
+
+Reglas:
+- No meter lógica de negocio en controllers.
+- No hacer que los casos de uso dependan de Express.
+- No acceder a la base de datos fuera de las abstracciones existentes.
+- No duplicar lógica que ya vive en otro caso de uso o servicio.
+
+**Frontend** respeta la organización de `src/` (`api/`, `app/`, `context/`,
+`features/`, `layout/`, `lib/`, `shared/`, `types/`). Antes de crear un
+componente o utilidad, buscar si ya existe uno reutilizable.
+
+No introducir arquitecturas, patrones o dependencias nuevas sin justificarlo
+y sin registrar la decisión.
+
+---
+
+## 6. Seguridad, base de datos y API
+
+- **Auth:** nunca eliminar ni evitar un chequeo de autorización para hacer
+  funcionar una funcionalidad. Los roles y middleware existentes se respetan.
+- **DB:** antes de modificar entidades o esquema, revisar entidades, relaciones
+  y `docs/database.md`. Usar el mecanismo de migraciones del proyecto. No
+  hacer cambios destructivos sin razón explícita.
+- **API:** respetar el flujo `Route → Controller → Use Case → Service /
+  Repository`. Ver `docs/api.md` para el contrato exacto.
+
+---
+
+## 7. Modificar código
+
+Antes de tocar código:
+
+1. Entender el problema.
+2. Revisar la implementación existente relacionada.
+3. Revisar la documentación correspondiente en `docs/`.
+4. Identificar el impacto.
+5. Seguir los patrones existentes.
+6. Hacer el cambio **más pequeño** que resuelva el problema.
+7. Validar.
+
+No modificar código no relacionado con la tarea.
+
+---
+
+## 8. Validación
+
+Una tarea no termina porque se escribió código. Según el caso, verificar:
+
+- TypeScript compila.
+- Tests pasan.
+- Lint pasa.
+- Build pasa.
+- Comportamiento real (backend y frontend).
+- Integración frontend ↔ backend.
+
+Si una validación no puede ejecutarse, decirlo explícitamente.
+
+---
+
+## 9. Documentación
+
+Si un cambio afecta arquitectura, dominio, base de datos, contrato de API o
+comportamiento observable, actualizar el documento correspondiente en `docs/`:
+
+- `docs/architecture.md` → arquitectura y organización del código.
+- `docs/domain.md` → entidades y conceptos del dominio.
+- `docs/database.md` → esquema, relaciones, migraciones.
+- `docs/api.md` → contrato de endpoints.
+- `docs/use-cases.md` → casos de uso.
+- `docs/requirements.md` → requisitos.
+
+---
+
+## 10. Regla principal
+
+> **Entender primero, modificar después.**
+
+## 11. Forma de trabajar
+- Haz solo lo que se pide: no añadas funcionalidades por tu cuenta.
+- Cambios pequeños y enfocados; no reescribas lo que ya funciona.
+- Al terminar, resume qué has cambiado y cualquier decisión que deba revisar.

@@ -4,6 +4,18 @@ import type { Participant } from "@domain";
 export const ParticipantSchema = new EntitySchema<Participant>({
   name: "Participant",
   tableName: "participants",
+  indices: [
+    {
+      name: "UQ_participants_document_location",
+      columns: ["documentNumber", "locationId"],
+      unique: true,
+    },
+    {
+      name: "UQ_participants_email_location",
+      columns: ["email", "locationId"],
+      unique: true,
+    },
+  ],
   columns: {
     id: {
       type: "uuid",
