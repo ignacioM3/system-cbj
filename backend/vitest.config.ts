@@ -14,8 +14,15 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@domain": path.resolve(import.meta.dirname, "./src/domain/index.ts"),
-    },
+    alias: [
+      {
+        find: /^@domain$/,
+        replacement: path.resolve(import.meta.dirname, "./src/domain/index.ts"),
+      },
+      {
+        find: /^@domain\/(.*)$/,
+        replacement: path.resolve(import.meta.dirname, "./src/domain/$1"),
+      },
+    ],
   },
 });

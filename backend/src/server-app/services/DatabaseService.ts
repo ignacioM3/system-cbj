@@ -1,10 +1,10 @@
 import { Between, type DataSource, type Repository } from "typeorm";
-import { UserNotFoundError, type IDatabaseService } from "@domain";
+import { UserNotFoundError, ParticipantNotFoundError, type IDatabaseService } from "@domain";
 import type { Location, Participant, User } from "@domain";
 import { UserSchema } from "../database/schemas/UserSchema.js";
 import type { UserRole } from "../database/schemas/UserRole.js";
 import { LocationSchema } from "../database/schemas/LocationSchema.js";
-import { LocationNotFoundError } from "@domain/errors/LocationErrors.js";
+import { LocationNotFoundError } from "../../domain/errors/LocationErrors.js";
 import { ParticipantSchema } from "../database/schemas/ParticipantSchema.js";
 
 /* Implementación de IDatabaseService usando typeorm */
@@ -278,6 +278,63 @@ export class DatabaseService implements IDatabaseService {
       console.error(`Error fetching participants by location ID ${locationId}:`, error);
       throw new Error(
         `Failed to fetch participants: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  async getParticipantById(id: string): Promise<Participant | null> {
+    try {
+      const participant = await this.participantRepository.findOne({
+        where: { id },
+      });
+      return participant;
+    } catch (error) {
+      console.error(`Error fetching participant by ID ${id}:`, error);
+      throw new Error(
+        `Failed to fetch participant: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  async getParticipantByEmailAndLocationId(email: string, locationId: string): Promise<Participant | null> {
+    try {
+      const participant = await this.participantRepository.findOne({
+        where: { email, locationId },
+      });
+      return participant;
+    } catch (error) {
+      console.error(`Error fetching participant by email ${email}:`, error);
+      throw new Error(
+        `Failed to fetch participant: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  async updateParticipant(participantId: string, updateData: Partial<Participant>): Promise<Participant> {
+    try {
+      const participant = await this.participantRepository.findOne({
+        where: { id: participantId },
+      });
+      if (!participant) {
+        throw new ParticipantNotFoundError();
+      }
+
+      const updatedParticipant = this.participantRepository.merge(participant, updateData);
+      await this.participantRepository.save(updatedParticipant);
+      return updatedParticipant;
+    } catch (error) {
+      console.error(`Error updating participant ${participantId}:`, error);
+      if (error instanceof ParticipantNotFoundError) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to update participant: ${
           error instanceof Error ? error.message : String(error)
         }`,
       );

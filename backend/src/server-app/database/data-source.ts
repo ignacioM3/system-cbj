@@ -3,6 +3,7 @@ import { UserSchema } from "./schemas/UserSchema.js";
 import { AttendanceSchema } from "./schemas/AttendanceSchema.js";
 import { LocationSchema } from "./schemas/LocationSchema.js";
 import { ParticipantSchema } from "./schemas/ParticipantSchema.js";
+import { AddParticipantUniqueIndexes1760000000000 } from "./migrations/1760000000000-AddParticipantUniqueIndexes.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -14,6 +15,7 @@ export const AppDataSource = new DataSource({
   synchronize: true, 
   logging: false,
   entities: [UserSchema, ParticipantSchema, LocationSchema, AttendanceSchema],
+  migrations: [AddParticipantUniqueIndexes1760000000000],
 });
 
 export async function InitializeDatabase(): Promise<void> {

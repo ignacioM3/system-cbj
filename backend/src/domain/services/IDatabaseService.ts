@@ -20,8 +20,11 @@ export interface IDatabaseService {
   updateLocation(locationId: string, updateData: Partial<Location>): Promise<Location>;
 
   //participant
-   getParticipantByLocationId(id: string): Promise<Participant[] | null>;
+  getParticipantByLocationId(id: string): Promise<Participant[] | null>;
   getParticipantByDocumentNumberAndLocationId(documentNumber: string, locationId: string): Promise<Participant | null>;
+  getParticipantById(id: string): Promise<Participant | null>;
+  getParticipantByEmailAndLocationId(email: string, locationId: string): Promise<Participant | null>;
+  updateParticipant(participantId: string, updateData: Partial<Participant>): Promise<Participant>;
   createParticipant(participant: Omit<Participant, "id" | "isActive" | "created_at">): Promise<Participant>;
 }
     
