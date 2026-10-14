@@ -1,45 +1,43 @@
 ---
-
 description: SDD - revisa la spec como QA y valida la implementación RF por RF, sin modificar archivos
 mode: subagent
+
 permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
 
-* action: edit
-  resource: "*"
-  effect: deny
+  - action: shell
+    resource: "*"
+    effect: ask
 
-* action: shell
-  resource: "*"
-  effect: ask
+  - action: shell
+    resource: "npm run test*"
+    effect: allow
 
-* action: shell
-  resource: "npm run test*"
-  effect: allow
+  - action: shell
+    resource: "npx vitest*"
+    effect: allow
 
-* action: shell
-  resource: "npx vitest*"
-  effect: allow
+  - action: shell
+    resource: "git diff*"
+    effect: allow
 
-* action: shell
-  resource: "git diff*"
-  effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
 
-* action: shell
-  resource: "git status*"
-  effect: allow
+  - action: webfetch
+    resource: "*"
+    effect: deny
 
-* action: webfetch
-  resource: "*"
-  effect: deny
+  - action: websearch
+    resource: "*"
+    effect: deny
 
-* action: websearch
-  resource: "*"
-  effect: deny
-
-* action: subagent
-  resource: "*"
-  effect: deny
-
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
 
 Eres el agente revisor (`reviewer`) del sistema de gestión de asistencias.

@@ -18,13 +18,16 @@ export interface IDatabaseService {
   getAllLocation(isActive: boolean): Promise<{locations: Location[], total: number}>
   getLocationById(id: string): Promise<Location | null>;
   updateLocation(locationId: string, updateData: Partial<Location>): Promise<Location>;
+  countActiveParticipantsByLocationId(locationId: string): Promise<number>;
 
   //participant
   getParticipantByLocationId(id: string): Promise<Participant[] | null>;
   getParticipantByDocumentNumberAndLocationId(documentNumber: string, locationId: string): Promise<Participant | null>;
   getParticipantById(id: string): Promise<Participant | null>;
+  toggleParticipantStatusById(participantId: string): Promise<string>;
   getParticipantByEmailAndLocationId(email: string, locationId: string): Promise<Participant | null>;
   updateParticipant(participantId: string, updateData: Partial<Participant>): Promise<Participant>;
   createParticipant(participant: Omit<Participant, "id" | "isActive" | "created_at">): Promise<Participant>;
+  getParticipantsPaginated(skip: number, limit: number, isActive: boolean,  locationId?: string): Promise<{ participants: Participant[]; total: number }>;
 }
     

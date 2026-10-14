@@ -26,7 +26,7 @@ export function ListUsersCoordinator() {
 
   
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['gettAllUserCoordinator', currentPage],
+    queryKey: ['getAllUserCoordinator', currentPage],
     queryFn: () => gettAllUserCoordinator(currentPage),
     retry: false
   });

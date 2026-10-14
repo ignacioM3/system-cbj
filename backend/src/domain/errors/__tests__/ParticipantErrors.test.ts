@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   ParticipantNotFoundError,
   ParticipantInactiveError,
+  ParticipantStatusConflictError,
 } from "../ParticipantErrors.js";
 import { AppError } from "../AppError.js";
 
@@ -32,5 +33,20 @@ describe("ParticipantInactiveError", () => {
     expect(error.code).toBe("PARTICIPANT_INACTIVE");
     expect(error.statusCode).toBe(400);
     expect(error.message).toBe("Participante Inactivo");
+  });
+});
+
+describe("ParticipantStatusConflictError", () => {
+  it("es instanciable y extiende AppError", () => {
+    const error = new ParticipantStatusConflictError();
+    expect(error).toBeInstanceOf(AppError);
+    expect(error).toBeInstanceOf(Error);
+  });
+
+  it("tiene message, code y statusCode correctos", () => {
+    const error = new ParticipantStatusConflictError();
+    expect(error.code).toBe("PARTICIPANT_STATUS_CONFLICT");
+    expect(error.statusCode).toBe(409);
+    expect(error.message).toBeTruthy();
   });
 });

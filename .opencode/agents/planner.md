@@ -1,32 +1,31 @@
 ---
-
 description: SDD - redacta la spec, el plan y las tareas de una petición, sin tocar código
 mode: subagent
+
 permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
 
-* action: edit
-  resource: "*"
-  effect: deny
+  - action: edit
+    resource: "specs/**"
+    effect: allow
 
-* action: edit
-  resource: "specs/**"
-  effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
 
-* action: shell
-  resource: "*"
-  effect: deny
+  - action: webfetch
+    resource: "*"
+    effect: deny
 
-* action: webfetch
-  resource: "*"
-  effect: deny
+  - action: websearch
+    resource: "*"
+    effect: deny
 
-* action: websearch
-  resource: "*"
-  effect: deny
-
-* action: subagent
-  resource: "*"
-  effect: deny
+  - action: subagent
+    resource: "*"
+    effect: deny
 
 ---
 

@@ -617,7 +617,43 @@ vacía. El email no vacío se persiste en minúsculas y sin espacios externos.
 
 ## 9.5. Activar / desactivar participante
 
-Permite administrar el estado del participante sin eliminar necesariamente sus registros históricos.
+La operación administra `isActive` como una alternancia: un participante activo
+pasa a inactivo y uno inactivo pasa a activo. No elimina al participante ni sus
+registros históricos.
+
+### Comprobación consultiva previa
+
+`EnsureParticipantExistsUseCase` recibe el identificador y consulta
+`IDatabaseService.getParticipantById`. Si el participante no existe, lanza
+`ParticipantNotFoundError`; si existe, finaliza sin devolver ni exponer sus
+datos y sin modificar ningún registro.
+
+Esta comprobación permite resolver la inexistencia antes de autenticación y
+autorización, pero no realiza la alternancia.
+
+### Alternancia de estado
+
+`DisableAndActiveParticipantUseCase` es el único caso de uso que coordina la
+alternancia. Recibe únicamente `participantId`, invoca una vez la operación
+atómica de `IDatabaseService` y devuelve:
+
+```ts
+{
+  participantId: string;
+}
+```
+
+No recibe el body HTTP ni utiliza un valor `isActive` proporcionado por el
+cliente. `ParticipantNotFoundError` y `ParticipantStatusConflictError` se
+propagan para que la capa HTTP los adapte a `404` y `409`, respectivamente.
+
+### Persistencia y concurrencia
+
+La lectura del estado, su negación y el guardado se ejecutan en una misma
+transacción mediante el repositorio del manager transaccional. La fila se lee
+con bloqueo `FOR UPDATE NOWAIT`. Si PostgreSQL informa contención mediante
+`SQLSTATE 55P03`, la operación lanza `ParticipantStatusConflictError` y no
+aplica una transición adicional.
 
 ---
 

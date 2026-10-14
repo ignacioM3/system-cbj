@@ -39,10 +39,31 @@ export const adminRoutes = {
         allowedRoles: [UserRole.ADMIN],
     },
     locationDetails: {
-        route: (id?: string) => `/dashboard/location/details/${id?? ":id"}`,
+        route: (id?: string) => `/dashboard/location/details/${id ?? ":id"}`,
         layout: adminLayoutImport,
         page: async () => (await import('../../../features/admin/pages/LocationDetails')).LocationDetails,
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+    },
+      listParticipantByLocation: {
+        route: () => `/dashboard/participants/list`,
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/ListParticipant')).ListParticipant,
+        requiresAuth: true,
+        allowedRoles: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
+    },
+    createParticipant:{
+        route: (id?: string) => `/dashboard/participants/add/${id ?? ":id"}`,
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/CreateParticipant')).CreateParticipant,
+        requiresAuth: true,
+        allowedRoles: [UserRole.COORDINATOR, UserRole.EQUIPMENT, UserRole.ADMIN],
+    },
+    editParticipant:{
+        route: (id?: string) => `/dashboard/participants/edit/${id ?? ":id"}`,
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/EditParticipantPage')).EditParticipant,
+        requiresAuth: true,
+        allowedRoles: [UserRole.COORDINATOR, UserRole.EQUIPMENT, UserRole.ADMIN],
     }
 }

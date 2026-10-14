@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { DatabaseService } from "../DatabaseService.js";
-import { ParticipantNotFoundError } from "@domain";
+import {
+  ParticipantNotFoundError,
+  ParticipantStatusConflictError,
+} from "@domain";
 import type { Participant } from "@domain";
 
 const baseParticipant: Participant = {
@@ -23,6 +26,11 @@ describe("DatabaseService - participantes (T3)", () => {
     merge: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
   };
+  let transactionalParticipantRepo: {
+    findOne: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
+  let transaction: ReturnType<typeof vi.fn>;
   let db: DatabaseService;
 
   beforeEach(() => {
@@ -32,8 +40,16 @@ describe("DatabaseService - participantes (T3)", () => {
       merge: vi.fn((a: unknown, b: unknown) => ({ ...a as object, ...b as object })),
       save: vi.fn(async (p: unknown) => p),
     };
+    transactionalParticipantRepo = {
+      findOne: vi.fn(),
+      save: vi.fn(async (participant: Participant) => participant),
+    };
+    transaction = vi.fn(async (operation: (manager: { getRepository: ReturnType<typeof vi.fn> }) => Promise<unknown>) =>
+      operation({ getRepository: vi.fn(() => transactionalParticipantRepo) }),
+    );
     const dataSource = {
       getRepository: vi.fn(() => participantRepo),
+      transaction,
     };
     db = new DatabaseService(dataSource as never);
   });
@@ -73,5 +89,97 @@ describe("DatabaseService - participantes (T3)", () => {
     await expect(db.updateParticipant("uuid-x", { firstName: "Maria" })).rejects.toBeInstanceOf(
       ParticipantNotFoundError,
     );
+  });
+
+  it("alterna un participante activo a inactivo dentro de una transacción", async () => {
+    transactionalParticipantRepo.findOne.mockResolvedValue({ ...baseParticipant });
+
+    const result = await db.toggleParticipantStatusById(baseParticipant.id);
+
+    expect(transaction).toHaveBeenCalledOnce();
+    expect(transactionalParticipantRepo.findOne).toHaveBeenCalledWith({
+      where: { id: baseParticipant.id },
+      lock: { mode: "pessimistic_write", onLocked: "nowait" },
+    });
+    expect(transactionalParticipantRepo.save).toHaveBeenCalledWith({
+      ...baseParticipant,
+      isActive: false,
+    });
+    expect(participantRepo.findOne).not.toHaveBeenCalled();
+    expect(participantRepo.save).not.toHaveBeenCalled();
+    expect(result).toBe(baseParticipant.id);
+  });
+
+  it("alterna un participante inactivo a activo sin modificar otros campos", async () => {
+    const inactiveParticipant = { ...baseParticipant, isActive: false };
+    transactionalParticipantRepo.findOne.mockResolvedValue(inactiveParticipant);
+
+    const result = await db.toggleParticipantStatusById(baseParticipant.id);
+
+    expect(transactionalParticipantRepo.save).toHaveBeenCalledWith({
+      ...inactiveParticipant,
+      isActive: true,
+    });
+    expect(result).toBe(baseParticipant.id);
+  });
+
+  it("lanza ParticipantNotFoundError bajo lock sin guardar si no existe", async () => {
+    transactionalParticipantRepo.findOne.mockResolvedValue(null);
+
+    await expect(db.toggleParticipantStatusById("missing-id")).rejects.toBeInstanceOf(
+      ParticipantNotFoundError,
+    );
+
+    expect(transactionalParticipantRepo.findOne).toHaveBeenCalledWith({
+      where: { id: "missing-id" },
+      lock: { mode: "pessimistic_write", onLocked: "nowait" },
+    });
+    expect(transactionalParticipantRepo.save).not.toHaveBeenCalled();
+  });
+
+  it("traduce SQLSTATE 55P03 a ParticipantStatusConflictError sin guardar", async () => {
+    transactionalParticipantRepo.findOne.mockRejectedValue({ code: "55P03" });
+
+    await expect(db.toggleParticipantStatusById(baseParticipant.id)).rejects.toBeInstanceOf(
+      ParticipantStatusConflictError,
+    );
+
+    expect(transactionalParticipantRepo.save).not.toHaveBeenCalled();
+  });
+
+  it("ante dos invocaciones solapadas solo una alterna y la otra recibe conflicto", async () => {
+    let lockHeld = false;
+    let releaseFirst: (() => void) | undefined;
+    const firstMayContinue = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+
+    transactionalParticipantRepo.findOne.mockImplementation(async () => {
+      if (lockHeld) {
+        releaseFirst?.();
+        throw { code: "55P03" };
+      }
+
+      lockHeld = true;
+      await firstMayContinue;
+      return { ...baseParticipant };
+    });
+
+    const results = await Promise.allSettled([
+      db.toggleParticipantStatusById(baseParticipant.id),
+      db.toggleParticipantStatusById(baseParticipant.id),
+    ]);
+
+    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    const rejected = results.find((result) => result.status === "rejected");
+    expect(rejected).toMatchObject({
+      status: "rejected",
+      reason: expect.any(ParticipantStatusConflictError),
+    });
+    expect(transactionalParticipantRepo.save).toHaveBeenCalledOnce();
+    expect(transactionalParticipantRepo.save).toHaveBeenCalledWith({
+      ...baseParticipant,
+      isActive: false,
+    });
   });
 });

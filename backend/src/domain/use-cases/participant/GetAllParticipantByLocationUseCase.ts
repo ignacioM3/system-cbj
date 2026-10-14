@@ -10,6 +10,7 @@ export interface GetAllParticipantByLocationInput {
 
 export interface GetAllParticipantByLocationOutput {
   participants: Participant[];
+  locationName: string
 }
 
 export class GetAllParticipantByLocationUseCase {
@@ -22,6 +23,8 @@ export class GetAllParticipantByLocationUseCase {
     if (!input.locationId) {
       throw new RequiredIDError();
     }
+    const location = await this.db.getLocationById(input.locationId);
+    const locationName = location?.name ?? "Sede";
 
     const participants = await this.db.getParticipantByLocationId(
       input.locationId,
@@ -30,6 +33,6 @@ export class GetAllParticipantByLocationUseCase {
       throw new LocationNotFoundError();
     }
 
-    return { participants };
+    return { participants, locationName };
   }
 }

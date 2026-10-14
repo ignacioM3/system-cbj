@@ -1,5 +1,10 @@
 import { Between, type DataSource, type Repository } from "typeorm";
-import { UserNotFoundError, ParticipantNotFoundError, type IDatabaseService } from "@domain";
+import {
+  UserNotFoundError,
+  ParticipantNotFoundError,
+  ParticipantStatusConflictError,
+  type IDatabaseService,
+} from "@domain";
 import type { Location, Participant, User } from "@domain";
 import { UserSchema } from "../database/schemas/UserSchema.js";
 import type { UserRole } from "../database/schemas/UserRole.js";
@@ -9,11 +14,13 @@ import { ParticipantSchema } from "../database/schemas/ParticipantSchema.js";
 
 /* Implementación de IDatabaseService usando typeorm */
 export class DatabaseService implements IDatabaseService {
+  private dataSource: DataSource;
   private userRepository: Repository<User>;
   private locationRepository: Repository<Location>;
   private participantRepository: Repository<Participant>;
 
   constructor(dataSource: DataSource) {
+    this.dataSource = dataSource;
     this.userRepository = dataSource.getRepository(UserSchema);
     this.locationRepository = dataSource.getRepository(LocationSchema);
     this.participantRepository = dataSource.getRepository(ParticipantSchema);
@@ -152,6 +159,7 @@ export class DatabaseService implements IDatabaseService {
           "user.email",
           "user.role",
           "user.isActive",
+          "user.locationId"
         ])
         .where("user.id = :id", { id })
         .getOne();
@@ -270,7 +278,9 @@ export class DatabaseService implements IDatabaseService {
   async getParticipantByLocationId(locationId: string): Promise<Participant[] | null> {
     try {
       const participants = await this.participantRepository.find({
-        where: { locationId },
+        where: { locationId, isActive: true },
+        
+        order: { firstName: "ASC" },
       });
       return participants || null;
   
@@ -297,6 +307,45 @@ export class DatabaseService implements IDatabaseService {
           error instanceof Error ? error.message : String(error)
         }`,
       );
+    }
+  }
+
+  async toggleParticipantStatusById(participantId: string): Promise<string> {
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const participantRepository = manager.getRepository(ParticipantSchema);
+        const participant = await participantRepository.findOne({
+          where: { id: participantId },
+          lock: {
+            mode: "pessimistic_write",
+            onLocked: "nowait",
+          },
+        });
+
+        if (!participant) {
+          throw new ParticipantNotFoundError();
+        }
+
+        participant.isActive = !participant.isActive;
+        await participantRepository.save(participant);
+
+        return participant.id;
+      });
+    } catch (error) {
+      if (error instanceof ParticipantNotFoundError) {
+        throw error;
+      }
+
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "55P03"
+      ) {
+        throw new ParticipantStatusConflictError();
+      }
+
+      throw new Error("Failed to toggle participant status");
     }
   }
 
@@ -370,4 +419,42 @@ export class DatabaseService implements IDatabaseService {
       );
     }
   }
+
+  async getParticipantsPaginated(skip: number, limit: number, isActive: boolean, locationId: string): Promise<{ participants: Participant[]; total: number }> {
+    try {
+      const [participants, total] = await this.participantRepository.findAndCount({
+        skip,
+        take: limit,
+        where: {
+          locationId,
+          isActive,
+        },
+      });
+      return { participants, total };
+    } catch (error) {
+      console.error("Error fetching paginated participants:", error);
+      throw new Error("Failed to fetch participants");
+    }
+  }
+
+  async countActiveParticipantsByLocationId(
+  locationId: string,
+): Promise<number> {
+  try {
+    return await this.participantRepository.count({
+      where: {
+        locationId,
+        isActive: true,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Error counting active participants for location ${locationId}:`,
+      error,
+    );
+
+    throw new Error("Failed to count active participants");
+  }
 }
+}
+
