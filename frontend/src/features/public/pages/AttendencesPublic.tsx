@@ -4,6 +4,9 @@ import {
   BiCheck,
   BiRightArrowAlt,
 } from "react-icons/bi";
+import { useQuery } from "@tanstack/react-query";
+import { getAllParticipantsBYLocationIdApi } from "../../../api/ParticipantApi";
+import { useParams } from "react-router-dom";
 
 interface YoungPerson {
   id: string;
@@ -24,29 +27,32 @@ export function AttendancePage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const youngPeople = useMemo<YoungPerson[]>(() => {
-    return [
-      { id: "1", firstName: "Benjamin", lastName: "Izaguirre" },
-      { id: "2", firstName: "María", lastName: "González" },
-      { id: "3", firstName: "Carlos", lastName: "Rodríguez" },
-      { id: "4", firstName: "Lucía", lastName: "Fernández" },
-      { id: "5", firstName: "Sofía", lastName: "López" },
-      { id: "6", firstName: "Mateo", lastName: "Martínez" },
-      { id: "7", firstName: "Valentina", lastName: "Gómez" },
-      { id: "8", firstName: "Diego", lastName: "Díaz" },
-      { id: "9", firstName: "Camila", lastName: "Torres" },
-      { id: "10", firstName: "Sebastián", lastName: "Ramírez" },
-    ];
-  }, []);
+const { id } = useParams();
+const locationId = id ?? null;
 
-  const locationName = "CBJ Martelli";
+const {
+  data,
+  isLoading,
+  isError,
+} = useQuery({
+  queryKey: ["participantsByLocation", locationId],
+  queryFn: () =>
+    getAllParticipantsBYLocationIdApi(locationId!),
+  enabled: !!locationId,
+  retry: false,
+})
 
-  /*
-   * Fecha actual en formato YYYY-MM-DD.
-   *
-   * Usamos la fecha local del navegador para que el cambio
-   * de día respete la zona horaria del usuario.
-   */
+const participants = data?.participants ?? [];
+const locationName = data?.locationName ?? "Sede";
+
+const youngPeople = useMemo<YoungPerson[]>(() => {
+  return (participants ?? []).map((participant) => ({
+    id: participant.id,
+    firstName: participant.firstName,
+    lastName: participant.lastName,
+  }));
+}, [participants]);
+
   const getToday = () => {
     const now = new Date();
 
@@ -57,14 +63,6 @@ export function AttendancePage() {
     return `${year}-${month}-${day}`;
   };
 
-  /*
-   * Al cargar la página:
-   *
-   * 1. Buscamos la asistencia guardada.
-   * 2. Comprobamos que sea del día actual.
-   * 3. Si es de hoy, recuperamos la persona.
-   * 4. Si es de otro día, eliminamos el registro viejo.
-   */
   useEffect(() => {
     const storedAttendance = localStorage.getItem(
       ATTENDANCE_STORAGE_KEY
@@ -255,9 +253,30 @@ export function AttendancePage() {
     );
   }
 
-  /*
-   * FORMULARIO DE ASISTENCIA
-   */
+if (!locationId) {
+  return <p>No se especificó la sede.</p>;
+}
+
+if (isLoading) {
+  return (
+    <main className="min-h-screen flex items-center justify-center">
+      <p className="text-slate-600">
+        Cargando participantes...
+      </p>
+    </main>
+  );
+}
+
+if (isError) {
+  return (
+    <main className="min-h-screen flex items-center justify-center">
+      <p className="text-red-600">
+        Error al cargar los participantes.
+      </p>
+    </main>
+  );
+}
+
   return (
     <main className="min-h-screen bg-linear-to-br from-purple-700 via-purple-600 to-violet-600 px-4 flex items-center justify-center">
       <section

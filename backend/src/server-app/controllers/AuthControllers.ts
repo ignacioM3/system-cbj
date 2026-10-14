@@ -38,6 +38,7 @@ export class AuthControllers {
   };
 
   perfil = async (req: Request, res: Response) => {
+    console.log(req.user)
     return res.json(req.user);
   };
 }

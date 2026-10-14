@@ -3,3 +3,5 @@
 /frontend/node_modules
 /frontend/.env
 repomix-output.xml
+
+/backend/dist

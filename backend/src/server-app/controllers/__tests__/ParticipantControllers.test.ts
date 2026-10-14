@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ParticipantControllers } from "../ParticipantControllers.js";
 import type { DatabaseService } from "../../services/DatabaseService.js";
-import type { Participant } from "@domain";
+import type { Participant } from "../../../domain/entities/Participant.js";
+import {
+  ParticipantNotFoundError,
+  ParticipantStatusConflictError,
+} from "../../../domain/errors/ParticipantErrors.js";
 
 const baseParticipant: Participant = {
   id: "uuid-1",
@@ -27,6 +31,7 @@ function makeDb(
       async (_id: string, data: unknown) =>
         ({ ...baseParticipant, ...(data as object) }),
     ),
+    toggleParticipantStatusById: vi.fn(async (participantId: string) => participantId),
     ...overrides,
   } as unknown as DatabaseService;
 }
@@ -151,5 +156,76 @@ describe("ParticipantControllers.editParticipant (T5)", () => {
     );
     expect(db.updateParticipant).toHaveBeenCalledWith("uuid-1", { email: "maria@test.com" });
     expect(res.status).toHaveBeenCalledWith(200);
+  });
+});
+
+describe("ParticipantControllers - alternancia de estado", () => {
+  it("el handler previo continúa sin responder ni adjuntar datos cuando existe", async () => {
+    const db = makeDb();
+    const controller = new ParticipantControllers(db);
+    const req = { params: { id: "uuid-1" }, body: { isActive: false } };
+    const res = makeRes();
+    const next = vi.fn();
+
+    expect(db.getParticipantById).toHaveBeenCalledOnce();
+    expect(db.getParticipantById).toHaveBeenCalledWith("uuid-1");
+    expect(next).toHaveBeenCalledOnce();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(req).toEqual({ params: { id: "uuid-1" }, body: { isActive: false } });
+    expect(db.toggleParticipantStatusById).not.toHaveBeenCalled();
+  });
+
+
+  it("el handler principal ignora el body, entrega solo params.id y responde 200 exacto", async () => {
+    const db = makeDb();
+    const controller = new ParticipantControllers(db);
+    const req = {
+      params: { id: "uuid-1" },
+      body: { isActive: true, arbitrary: "ignored" },
+    };
+    const res = makeRes();
+
+    await controller.toggleParticipantStatus(req as never, res as never);
+
+    expect(db.toggleParticipantStatusById).toHaveBeenCalledOnce();
+    expect(db.toggleParticipantStatusById).toHaveBeenCalledWith("uuid-1");
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ participantId: "uuid-1" });
+  });
+
+  it("el handler principal adapta una inexistencia tardía a 404", async () => {
+    const db = makeDb({
+      toggleParticipantStatusById: vi
+        .fn()
+        .mockRejectedValue(new ParticipantNotFoundError()),
+    });
+    const controller = new ParticipantControllers(db);
+    const res = makeRes();
+
+    await controller.toggleParticipantStatus(
+      { params: { id: "missing-id" }, body: {} } as never,
+      res as never,
+    );
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Participante no encontrado" });
+  });
+
+  it("el handler principal adapta el conflicto de concurrencia a 409", async () => {
+    const error = new ParticipantStatusConflictError();
+    const db = makeDb({
+      toggleParticipantStatusById: vi.fn().mockRejectedValue(error),
+    });
+    const controller = new ParticipantControllers(db);
+    const res = makeRes();
+
+    await controller.toggleParticipantStatus(
+      { params: { id: "uuid-1" }, body: { isActive: false } } as never,
+      res as never,
+    );
+
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({ error: error.message });
   });
 });

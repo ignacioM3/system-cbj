@@ -23,4 +23,5 @@ export interface LocationsListResponse {
 }
 export interface LocationDetailsResponse { 
   location: LocationDetails; 
+    activeParticipantsCount: number;
 }

@@ -1,14 +1,14 @@
 import type { Participant } from "@domain/entities/Participant.js";
 import type { IDatabaseService } from "@domain/services/IDatabaseService.js";
-
 import { RequiredIDError } from "@domain/errors/GlobalError.js";
 import {
   ParticipantInactiveError,
-  ParticipantNotFoundError,
+  ParticipantNotFoundError
 } from "@domain/errors/ParticipantErrors.js";
 
 import { DocumentNumberAlreadyExistsError } from "@domain/errors/UsersErrors.js";
 import { EmailAlreadyExistsError } from "@domain/errors/AuthErrors.js";
+
 
 export interface UpdateParticipantInput {
   updateData: Partial<Participant>;
@@ -21,13 +21,13 @@ export interface UpdateParticipantOutput {
 export class UpdateParticipantUseCase {
   constructor(private db: IDatabaseService) {}
 
-  async execute(
-    participantId: string,
-    input: UpdateParticipantInput,
-  ): Promise<UpdateParticipantOutput> {
+  async execute(participantId: string, input: UpdateParticipantInput): Promise<UpdateParticipantOutput> {
+ 
     if (!participantId) {
       throw new RequiredIDError();
     }
+
+    const updateData = input.updateData;
 
     const participant = await this.db.getParticipantById(participantId);
 
@@ -39,32 +39,31 @@ export class UpdateParticipantUseCase {
       throw new ParticipantInactiveError();
     }
 
-    if (input.updateData.documentNumber !== undefined) {
-      const existing =
-        await this.db.getParticipantByDocumentNumberAndLocationId(
-          input.updateData.documentNumber,
+    if (updateData.documentNumber !== undefined) {
+      const existing =await this.db.getParticipantByDocumentNumberAndLocationId(
+          updateData.documentNumber,
           participant.locationId,
         );
 
-      if (existing && existing.id !== participant.id) {
+      if (existing && existing.id !== participantId) {
         throw new DocumentNumberAlreadyExistsError();
       }
     }
 
-    if (input.updateData.email) {
+    if (updateData.email) {
       const existing = await this.db.getParticipantByEmailAndLocationId(
-        input.updateData.email,
+        updateData.email,
         participant.locationId,
       );
 
-      if (existing && existing.id !== participant.id) {
+      if (existing && existing.id !== participantId) {
         throw new EmailAlreadyExistsError();
       }
     }
 
     const updatedParticipant = await this.db.updateParticipant(
       participantId,
-      input.updateData,
+      updateData,
     );
 
     return { updatedParticipant };

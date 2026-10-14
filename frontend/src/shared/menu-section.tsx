@@ -49,6 +49,13 @@ export const menuSection: MenuSection[] = [
         label: "Centros",
         icon: <TbBuildings />,
         to: AppRoutes.locationsList.route(),
+        role: [UserRole.ADMIN],
+      },
+        {
+        label: "Mi Centro",
+        icon: <TbBuildings />,
+        to: AppRoutes.locationDetails.route(),
+       role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
       },
          {
         label: "Coordinadores",
@@ -59,13 +66,20 @@ export const menuSection: MenuSection[] = [
       {
         label: "Tallerista",
         icon: <GrWorkshop />,
+        role: [],
         to: AppRoutes.homeAdmin.route(),
       },
       {
+        label: "Jovenes - Admin",
+        icon: <FaChildren />,
+        role: [UserRole.ADMIN],
+        to: AppRoutes.listParticipantByLocation.route()
+      },
+        {
         label: "Jovenes",
         icon: <FaChildren />,
-        role: [UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT],
-        to: ""
+        role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
+        to: AppRoutes.listParticipantByLocation.route()
       },
       {
         label: "Asistencias",

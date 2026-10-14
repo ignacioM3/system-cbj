@@ -24,7 +24,7 @@ export function DeleteUserModal() {
         },
         onSuccess: (data) => {
             sileo.success({title: data})
-            queryClient.invalidateQueries({ queryKey: ['gettAllUserCoordinator'] })
+            queryClient.invalidateQueries({ queryKey: ['getAllUserCoordinator'] })
             navigate(location.pathname, { replace: true })
         }
     })

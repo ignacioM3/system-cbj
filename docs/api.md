@@ -422,6 +422,54 @@ No se admite modificar `id`, `created_at`, `isActive`, `locationId`,
 * `404`: participante inexistente (`{ "error": "Participante no encontrado" }`).
 * `500`: error interno no controlado.
 
+## 14.2. Alternar estado de participante
+
+```text
+POST /api/participant/toggle-status/:id
+```
+
+**Autenticación:** requerida mediante token JWT.
+
+**Autorización:** roles `Admin`, `Coordinator` o `Equipment`. El rol `Tutor`
+no tiene permiso para esta operación.
+
+**Parámetros de ruta:**
+
+* `id`: UUID del participante cuyo estado se desea alternar.
+
+La validación del UUID y la comprobación de existencia se realizan antes de la
+autenticación y autorización. Por ello, un UUID malformado o un UUID válido que
+no corresponde a un participante produce `404` aunque la solicitud no tenga
+token o pertenezca a un rol no autorizado. Esta comprobación previa no expone
+datos del participante ni modifica su estado.
+
+**Request body:** no es requerido. Si se envía, se ignora por completo,
+incluido cualquier valor de `isActive`. La operación calcula el nuevo estado a
+partir del valor persistido.
+
+**Response exitosa — 200:**
+
+```json
+{
+  "participantId": "uuid"
+}
+```
+
+**Errores:**
+
+* `401`: autenticación ausente o inválida, únicamente cuando el participante
+  existe.
+* `403`: usuario autenticado sin uno de los roles permitidos, únicamente cuando
+  el participante existe.
+* `404`: UUID malformado o participante inexistente. Esta respuesta precede a
+  `401` y `403` y utiliza `{ "error": "Participante no encontrado" }`.
+* `409`: otra solicitud concurrente mantiene bloqueada la alternancia del mismo
+  participante; la solicitud rechazada no modifica el estado.
+
+Ninguna modificación se ejecuta durante la comprobación de existencia ni antes
+de superar autenticación y autorización. Una solicitud autorizada alterna el
+estado exactamente una vez.
+
 ---
 
 # 15. Attendance

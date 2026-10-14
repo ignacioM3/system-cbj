@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { UpdateParticipantUseCase } from "../UpdateParticipant.js";
 import {
   ParticipantNotFoundError,
   ParticipantInactiveError,
-  DocumentNumberAlreadyExistsError,
-  EmailAlreadyExistsError,
-} from "@domain";
-import type { IDatabaseService } from "@domain";
-import type { Participant } from "@domain";
+} from "../../../errors/ParticipantErrors";
+import type { IDatabaseService } from "../../../services/IDatabaseService";
+import type { Participant } from "../../../entities/Participant";
+import { UpdateParticipantUseCase } from "../UpdateParticipantUseCase";
+import { DocumentNumberAlreadyExistsError, EmailAlreadyExistsError } from "../../..";
+
 
 const baseParticipant: Participant = {
   id: "uuid-1",

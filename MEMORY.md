@@ -593,11 +593,21 @@ La edición parcial de participantes está implementada en backend mediante
 autorización para `Admin`, `Coordinator` y `Equipment`, validaciones, tests e
 índices únicos por sede para documento y email mediante migración formal.
 
+La alternancia de estado de participantes está implementada en backend mediante
+`DisableAndActiveParticipantUseCase` y
+`POST /api/participant/toggle-status/:id`. Incluye comprobación previa de
+existencia, autenticación y autorización para `Admin`, `Coordinator` y
+`Equipment`, y alternancia transaccional con rechazo de conflictos concurrentes.
+Las tareas T1 a T8 de la spec 002 están completadas. La validación final fue
+APROBADA con RF 9/9, criterios 20/20, 87 tests backend en verde, build exitoso y
+cumplimiento de la Constitución.
+
 ## Próximos pasos
 
 1. Aplicar la migración de índices en cada entorno después de revisar y
    resolver posibles duplicados existentes.
-2. Integrar el endpoint de edición desde la capa `api/` del frontend cuando se
+2. Integrar los endpoints de participantes desde la capa `api/` del frontend
+   cuando se
    planifique la interfaz correspondiente.
 3. Resolver la deuda de `synchronize: true` antes de producción.
 

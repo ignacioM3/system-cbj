@@ -12,6 +12,16 @@ export class ParticipantInactiveError extends AppError {
   }
 }
 
+export class ParticipantStatusConflictError extends AppError {
+  constructor() {
+    super(
+      "El estado del participante está siendo modificado",
+      "PARTICIPANT_STATUS_CONFLICT",
+      409
+    );
+  }
+}
+
 export class NoFieldsToUpdateError extends AppError {
   constructor() {
     super("No hay campos a actualizar", "NO_FIELDS_TO_UPDATE", 400);

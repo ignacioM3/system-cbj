@@ -25,16 +25,27 @@ import { IoMdEye } from "react-icons/io";
 import { useRef } from "react";
 import { EditLocationNameModal } from "../components/EditLocationNameModal";
 import { FaUserFriends } from "react-icons/fa";
+import useAuth from "../../../app/hooks/use-auth";
+import { UserRole } from "../../../types/user-role";
 
 export function LocationDetails() {
   const { id } = useParams();
   const qrRef = useRef<AttendanceQRCodeRef>(null);
   const navigate = useNavigate();
   const locationReact = useLocation();
+  const { currentUser } = useAuth();
+  const isAdminOrCoordinator =
+    currentUser?.role === UserRole.ADMIN ||
+    currentUser?.role === UserRole.COORDINATOR
+      ? true
+      : false;
+  const isCoordinatorOrEquipment =
+    currentUser?.role === UserRole.COORDINATOR || currentUser?.role === UserRole.EQUIPMENT ? true : false
 
+  const locationId = isCoordinatorOrEquipment ? currentUser?.locationId : id;
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["locationDetails", id],
-    queryFn: () => getLocationById(id!),
+    queryKey: ["locationDetails", locationId],
+    queryFn: () => getLocationById(locationId!),
     retry: false,
   });
 
@@ -61,8 +72,8 @@ export function LocationDetails() {
     <PageContainer>
       <PageHeader
         goBack={true}
-        nameBack="Listado"
-        backString={AppRoutes.locationsList.route()}
+        nameBack={isCoordinatorOrEquipment ? "Inicio" : "Centros"}
+        backString={isCoordinatorOrEquipment ? AppRoutes.homeAdmin.route() : AppRoutes.locationsList.route()}
       >
         <PageTitle>Detalles de Sede</PageTitle>
       </PageHeader>
@@ -119,7 +130,9 @@ export function LocationDetails() {
                 </div>
               </div>
 
-              <button
+              {
+                isAdminOrCoordinator && (
+                        <button
                 className="
                   px-5
                   py-2.5
@@ -139,6 +152,8 @@ export function LocationDetails() {
               >
                 Editar Nombre
               </button>
+                )
+              }
             </div>
           </div>
 
@@ -155,7 +170,7 @@ export function LocationDetails() {
 
             <MetricCard
               title="Jóvenes inscriptos"
-              value={equipment.length}
+              value={data.activeParticipantsCount}
               color="text-green-600"
             />
 
