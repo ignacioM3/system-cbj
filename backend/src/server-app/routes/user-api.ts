@@ -38,6 +38,7 @@ router.post(
 );
 
 router.get('/list-coordinator', authenticate, authorize("Admin"), handleInputErrors, createHandler(UserControllers, "getUserCoordinator"))
+router.get('/list-equipment/:locationId', authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(UserControllers, "getUserEquipment"))
 router.post('/disable/:userId', authenticate, authorize("Admin", "Coordinator"), handleInputErrors, createHandler(UserControllers, "disableUser"))
 router.post('/delete/coordinator/:userId', authenticate, authorize("Admin"), handleInputErrors, createHandler(UserControllers, "deleteUser"))
 

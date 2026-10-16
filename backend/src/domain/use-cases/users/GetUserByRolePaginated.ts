@@ -6,6 +6,7 @@ export interface GetUserByRoleInput {
   role: UserRole;
   page?: number;
   limit?: number;
+  locationId?: string;
 }
 
 export interface GetUserByRoleOutput {
@@ -20,11 +21,13 @@ export class GetUsersByRoleUseCase {
       const page = input.page ?? 1;
       const limit = input.limit ?? 6;
 
+
     const skip = (page - 1) * limit
     return this.db.getUsersByRolePaginated(
         input.role,
         skip,
-        limit
+        limit,
+        input.locationId?? input.locationId,
     )
   }
 }

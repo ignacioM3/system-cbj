@@ -8,6 +8,8 @@ import { PiChalkboardTeacherDuotone } from "react-icons/pi";
 import { FaChildren } from "react-icons/fa6";
 import { IoCalendarNumberSharp, IoStatsChartSharp } from "react-icons/io5";
 import { GrWorkshop } from "react-icons/gr";
+import { BsPersonHeart } from "react-icons/bs";
+
 
 export interface MenuItem {
   label: string;
@@ -51,13 +53,13 @@ export const menuSection: MenuSection[] = [
         to: AppRoutes.locationsList.route(),
         role: [UserRole.ADMIN],
       },
-        {
+      {
         label: "Mi Centro",
         icon: <TbBuildings />,
         to: AppRoutes.locationDetails.route(),
-       role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
+        role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
       },
-         {
+      {
         label: "Coordinadores",
         icon: <RiTeamFill />,
         role: [UserRole.ADMIN],
@@ -73,13 +75,19 @@ export const menuSection: MenuSection[] = [
         label: "Jovenes - Admin",
         icon: <FaChildren />,
         role: [UserRole.ADMIN],
-        to: AppRoutes.listParticipantByLocation.route()
+        to: AppRoutes.listParticipantByLocation.route(),
       },
-        {
+      {
+        label: "Equipos",
+        icon: <BsPersonHeart />,
+        role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
+        to: AppRoutes.listUsersEquipment.route(),
+      },
+      {
         label: "Jovenes",
         icon: <FaChildren />,
         role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
-        to: AppRoutes.listParticipantByLocation.route()
+        to: AppRoutes.listParticipantByLocation.route(),
       },
       {
         label: "Asistencias",

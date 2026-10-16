@@ -129,10 +129,13 @@ export class DatabaseService implements IDatabaseService {
     role: UserRole,
     skip: number,
     limit: number,
-  ): Promise<{ users: User[]; total: number }> {
+    locationId?: string
+  ): Promise<{ users: User[]; total: number;}> {
     try {
       const [users, total] = await this.userRepository.findAndCount({
-        where: { role },
+        where: { role,
+           ...(locationId && { locationId }),
+         },
         relations: {
           location: true,
         },

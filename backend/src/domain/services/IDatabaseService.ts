@@ -10,7 +10,7 @@ export interface IDatabaseService {
   getUserByEmail(email: string): Promise<User | null>
   getUserForAuth(id: string): Promise<Omit<User, "password"> | null>
   getAllUsersByRole(role: UserRole): Promise<User[]>;
-  getUsersByRolePaginated(role: UserRole, skip: number, limit: number): Promise<{ users: User[]; total: number }>
+  getUsersByRolePaginated(role: UserRole, skip: number, limit: number,  locationId?: string,): Promise<{ users: User[]; total: number }>
   createUserWithRole(user: Omit<User, "id" | "isActive">): Promise<User>
   disableUserById(id: string): Promise<void>;
   //location

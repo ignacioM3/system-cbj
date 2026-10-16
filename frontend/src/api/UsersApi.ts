@@ -53,3 +53,19 @@ export async function createUserCoordinator(createUserData: CreateUserForm): Pro
     throw new Error("Unexpected error occurred");
   }
 }
+
+
+export async function gettAllUserEquipment(page: number, limit?: number, locationId?: string): Promise<UserListResponse> {
+  try {
+    const url = `/users/list-equipment/${locationId}?page=${page}&limit=${limit || 6}`;
+   
+    const { data } = await api.get(url);
+    return data
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      console.log(error)
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Unexpected error occurred");
+  }
+}

@@ -47,6 +47,23 @@ export class UserControllers {
     return res.status(200).json(result);
   };
 
+    getUserEquipment = async (req: Request<{locationId: string}>, res: Response) => {
+    const useCase = new GetUsersByRoleUseCase(this.db);
+    
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 6;
+    const {locationId} = req.params
+
+    const result = await useCase.execute({
+      role: UserRole.EQUIPMENT,
+      page,
+      limit,
+      locationId
+    });
+
+    return res.status(200).json(result);
+  };
+
   disableUser = async (req: Request<{userId: string}>, res: Response) => {
     const {userId} = req.params
 
