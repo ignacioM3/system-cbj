@@ -45,6 +45,13 @@ export const adminRoutes = {
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN],
     },
+        createUserEquipment:  {
+        route: () => "/dashboard/users/add/equipment",
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/CreateEquipment')).CreateEquipment,
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+    },
     locationDetails: {
         route: (id?: string) => `/dashboard/location/details/${id ?? ":id"}`,
         layout: adminLayoutImport,

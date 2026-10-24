@@ -54,7 +54,7 @@ export function ListUsersEquipment() {
              <PageTitle>Lista de Equipos</PageTitle>
 
         <ListAddButton
-          onClick={() => navigate(AppRoutes.createUserCoordinator.route())}
+          onClick={() => navigate(AppRoutes.createUserEquipment.route())}
         >
           Agregar Equipo
         </ListAddButton>
