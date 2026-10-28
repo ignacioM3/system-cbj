@@ -32,7 +32,7 @@ export const adminRoutes = {
         allowedRoles: [UserRole.ADMIN],
     },
     listUsersEquipment: {
-        route: () => `/dashboard/users/list-equipment/`,
+        route: (id?: string) => `/dashboard/users/list-equipment/${id ?? ":id"}`,
         layout: adminLayoutImport,
         page: async () => (await import('../../../features/admin/pages/ListUsersEquipment')).ListUsersEquipment,
         requiresAuth: true,
@@ -57,7 +57,7 @@ export const adminRoutes = {
         layout: adminLayoutImport,
         page: async () => (await import('../../../features/admin/pages/LocationDetails')).LocationDetails,
         requiresAuth: true,
-        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT],
     },
       listParticipantByLocation: {
         route: () => `/dashboard/participants/list`,

@@ -1,11 +1,11 @@
 import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import type { CreateUserForm, UserWithRelations } from "../types/User";
+import type { CreateUserForm, User, UserWithRelations } from "../types/User";
 
 interface UserListResponse {
   users: UserWithRelations[];
   total: number;
-}
+} 
 
 export async function gettAllUserCoordinator(page: number, limit?: number): Promise<UserListResponse> {
   try {
@@ -22,10 +22,10 @@ export async function gettAllUserCoordinator(page: number, limit?: number): Prom
   }
 }
 
-export async function deleteUserCoordinator(deleteUserId: string): Promise<string> {
+export async function deleteUser(deleteUserId: string): Promise<string> {
   try {
 
-    const url = `/users/delete/coordinator/${deleteUserId}`;
+    const url = `/users/delete/${deleteUserId}`;
     const { data } = await api.post(url);
 
     return data;
@@ -40,10 +40,11 @@ export async function deleteUserCoordinator(deleteUserId: string): Promise<strin
   }
 }
 
-export async function createUserCoordinator(createUserData: CreateUserForm): Promise<Location> {
+export async function createUserCoordinator(createUserData: CreateUserForm): Promise<User> {
   try {
     const url = "/users/create/coordinator";
     const { data } = await api.post(url, createUserData);
+    console.log(data)
     return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
@@ -64,6 +65,22 @@ export async function gettAllUserEquipment(page: number, limit?: number, locatio
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       console.log(error)
+      throw new Error(error.response.data.error);
+    }
+    throw new Error("Unexpected error occurred");
+  }
+}
+
+export async function createUserEquipment(createUserData: CreateUserForm, locationId: string): Promise<User> {
+  try {
+    console.log(locationId)
+    const url = `/users/create/equipment/${locationId}`;
+    const { data } = await api.post(url, createUserData);
+    console.log(data)
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      console.log(error);
       throw new Error(error.response.data.error);
     }
     throw new Error("Unexpected error occurred");

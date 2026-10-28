@@ -13,7 +13,7 @@ import {
 import { sileo } from "sileo";
 import LoadingSpinner from "../../../shared/ui/LoadingSpinner";
 import type { CreateUserForm } from "../../../types/User";
-import { createUserCoordinator } from "../../../api/UsersApi";
+import { createUserEquipment } from "../../../api/UsersApi";
 import useAuth from "../../../app/hooks/use-auth";
 
 export function CreateEquipment() {
@@ -27,6 +27,7 @@ export function CreateEquipment() {
     queryFn: () => getLocationById(locationId!),
     retry: false,
   });
+  
 
   const initialValues = {
     firstName: "",
@@ -51,15 +52,18 @@ export function CreateEquipment() {
 
   const password = watch("password")
   const { mutate } = useMutation({
-    mutationFn: createUserCoordinator,
-    onError: (error) => {
-      sileo.error({ title: error.message });
-    },
-    onSuccess: () => {
-      sileo.success({ title: "Equipo creado exitosamente" });
-      queryClient.invalidateQueries({ queryKey: ["getAllLocations"] });
-      reset();
-    },
+    mutationFn: (formData: CreateUserForm) =>
+    createUserEquipment(formData, data?.location.id!),
+
+  onError: (error) => {
+    sileo.error({ title: error.message });
+  },
+
+  onSuccess: () => {
+    sileo.success({ title: "Equipo creado exitosamente" });
+    queryClient.invalidateQueries({ queryKey: ["getAllUserEquipment"] });
+    reset();
+  },
   });
 
   const handleCreateLocation = (data: CreateUserForm) => {
@@ -127,19 +131,6 @@ export function CreateEquipment() {
                   className={`w-full placeholder-gray-400 px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#656766] focus:border-transparent  "}`}
                   placeholder="Ej: CBJ Munro"
                 />
-              </div>
-
-              <div>
-                <label className="text-md font-medium text-[#5C4630] mb-2 flex items-center gap-1">
-                  Centros{" "}
-                  {errors.locationId && (
-                    <ErrorLabel className="text-[12px]">
-                      {errors.locationId.message}
-                    </ErrorLabel>
-                  )}
-                </label>
-
-                
               </div>
 
               <div>

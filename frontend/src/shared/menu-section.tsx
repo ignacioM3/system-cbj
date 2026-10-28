@@ -80,7 +80,7 @@ export const menuSection: MenuSection[] = [
       {
         label: "Equipos",
         icon: <BsPersonHeart />,
-        role: [UserRole.COORDINATOR, UserRole.EQUIPMENT],
+        role: [UserRole.COORDINATOR],
         to: AppRoutes.listUsersEquipment.route(),
       },
       {
