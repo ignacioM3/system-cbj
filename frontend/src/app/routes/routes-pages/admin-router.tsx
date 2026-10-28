@@ -31,6 +31,13 @@ export const adminRoutes = {
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN],
     },
+    listUsersEquipment: {
+        route: (id?: string) => `/dashboard/users/list-equipment/${id ?? ":id"}`,
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/ListUsersEquipment')).ListUsersEquipment,
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+    },
     createUserCoordinator:  {
         route: () => "/dashboard/users/add/coordinator",
         layout: adminLayoutImport,
@@ -38,12 +45,19 @@ export const adminRoutes = {
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN],
     },
+        createUserEquipment:  {
+        route: () => "/dashboard/users/add/equipment",
+        layout: adminLayoutImport,
+        page: async () => (await import('../../../features/admin/pages/CreateEquipment')).CreateEquipment,
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+    },
     locationDetails: {
         route: (id?: string) => `/dashboard/location/details/${id ?? ":id"}`,
         layout: adminLayoutImport,
         page: async () => (await import('../../../features/admin/pages/LocationDetails')).LocationDetails,
         requiresAuth: true,
-        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR],
+        allowedRoles: [UserRole.ADMIN, UserRole.COORDINATOR, UserRole.EQUIPMENT],
     },
       listParticipantByLocation: {
         route: () => `/dashboard/participants/list`,

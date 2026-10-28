@@ -47,23 +47,66 @@ export class UserControllers {
     return res.status(200).json(result);
   };
 
-  disableUser = async (req: Request<{userId: string}>, res: Response) => {
-    const {userId} = req.params
+  getUserEquipment = async (
+    req: Request<{ locationId: string }>,
+    res: Response,
+  ) => {
+    const useCase = new GetUsersByRoleUseCase(this.db);
 
-     const useCase = new DisableUserUseCase(this.db);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 6;
+    const { locationId } = req.params;
 
-        await useCase.execute({ userId });
+    const result = await useCase.execute({
+      role: UserRole.EQUIPMENT,
+      page,
+      limit,
+      locationId,
+    });
 
-        res.send("Usuario deshabilitado con exito")
-  }
+    return res.status(200).json(result);
+  };
 
-  deleteUser = async(req: Request<{userId: string}>, res: Response) =>{
-    const {userId} = req.params;
+  disableUser = async (req: Request<{ userId: string }>, res: Response) => {
+    const { userId } = req.params;
+
+    const useCase = new DisableUserUseCase(this.db);
+
+    await useCase.execute({ userId });
+
+    res.send("Usuario deshabilitado con exito");
+  };
+
+  deleteUser = async (req: Request<{ userId: string }>, res: Response) => {
+    const { userId } = req.params;
 
     const useCase = new DeleteUserUseCase(this.db);
 
-    await useCase.execute({userId})
+    await useCase.execute({ userId });
 
-    res.send('Usuario eliminado con exito')
-  }
+    res.send("Usuario eliminado con exito");
+  };
+
+  createEquipmentByLocationId = async (
+    req: Request<{ locationId: string }>,
+    res: Response,
+  ) => {
+    const useCase = new CreateUserUseCase(this.db);
+    const { locationId } = req.params;
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordSaled = await bcrypt.hash(req.body.password, salt);
+    const userHashed = {
+      ...req.body,
+      locationId: locationId,
+      password: passwordSaled,
+    };
+
+    const newUser = await useCase.execute({
+      newUser: userHashed,
+      role: UserRole.EQUIPMENT,
+      
+    });
+    return res.status(201).json(newUser);
+  };
 }

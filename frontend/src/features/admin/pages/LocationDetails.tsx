@@ -40,7 +40,10 @@ export function LocationDetails() {
       ? true
       : false;
   const isCoordinatorOrEquipment =
-    currentUser?.role === UserRole.COORDINATOR || currentUser?.role === UserRole.EQUIPMENT ? true : false
+    currentUser?.role === UserRole.COORDINATOR ||
+    currentUser?.role === UserRole.EQUIPMENT
+      ? true
+      : false;
 
   const locationId = isCoordinatorOrEquipment ? currentUser?.locationId : id;
   const { data, isLoading, isError } = useQuery({
@@ -50,9 +53,7 @@ export function LocationDetails() {
   });
 
   if (isLoading) {
-    return (
-        <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   if (isError || !data) {
@@ -66,14 +67,18 @@ export function LocationDetails() {
   const location = data.location;
 
   const equipment = getEquipment(location.users);
-  const coordinator = getCoordinators(location.users)
+  const coordinator = getCoordinators(location.users);
 
   return (
     <PageContainer>
       <PageHeader
         goBack={true}
         nameBack={isCoordinatorOrEquipment ? "Inicio" : "Centros"}
-        backString={isCoordinatorOrEquipment ? AppRoutes.homeAdmin.route() : AppRoutes.locationsList.route()}
+        backString={
+          isCoordinatorOrEquipment
+            ? AppRoutes.homeAdmin.route()
+            : AppRoutes.locationsList.route()
+        }
       >
         <PageTitle>Detalles de Sede</PageTitle>
       </PageHeader>
@@ -117,23 +122,21 @@ export function LocationDetails() {
 
                     <p>{location.address}</p>
                   </div>
-                {
-                  coordinator[0] && (
-                         <div className="flex items-center gap-2 text-gray-500 mt-2">
-                    <FaUserFriends />
+                  {coordinator[0] && (
+                    <div className="flex items-center gap-2 text-gray-500 mt-2">
+                      <FaUserFriends />
 
-                     <p>{coordinator[0]?.lastName} {coordinator[0]?.firstName}</p>
-                  </div>
-                  )
-                }
-                  
+                      <p>
+                        {coordinator[0]?.lastName} {coordinator[0]?.firstName}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {
-                isAdminOrCoordinator && (
-                        <button
-                className="
+              {isAdminOrCoordinator && (
+                <button
+                  className="
                   px-5
                   py-2.5
                   rounded-xl
@@ -143,17 +146,16 @@ export function LocationDetails() {
                   transition
                   cursor-pointer
                 "
-                onClick={() =>
-                  navigate(
-                    locationReact.pathname +
-                      `?editNameLocationId=${location.id}`,
-                  )
-                }
-              >
-                Editar Nombre
-              </button>
-                )
-              }
+                  onClick={() =>
+                    navigate(
+                      locationReact.pathname +
+                        `?editNameLocationId=${location.id}`,
+                    )
+                  }
+                >
+                  Editar Nombre
+                </button>
+              )}
             </div>
           </div>
 
@@ -206,9 +208,16 @@ export function LocationDetails() {
                   </div>
                 </div>
 
-                <button className="text-sm font-medium text-purple-500 hover:text-purple-700 transition cursor-pointer">
-                  Ver todos
-                </button>
+                {isAdminOrCoordinator && (
+                  <button
+                    onClick={() =>
+                      navigate(AppRoutes.listUsersEquipment.route(location.id))
+                    }
+                    className="text-sm font-medium text-purple-500 hover:text-purple-700 transition cursor-pointer"
+                  >
+                    Ver todos
+                  </button>
+                )}
               </div>
 
               {/* TEAM LIST */}
